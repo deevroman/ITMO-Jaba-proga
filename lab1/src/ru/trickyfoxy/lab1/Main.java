@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab0;
+package ru.trickyfoxy.lab1;
 
 import java.util.Random;
 
