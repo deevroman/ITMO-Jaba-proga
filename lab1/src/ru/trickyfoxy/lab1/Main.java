@@ -1,7 +1,5 @@
 package ru.trickyfoxy.lab1;
 
-import java.util.Random;
-
 import static java.lang.Math.*;
 
 public class Main {
@@ -17,8 +15,7 @@ public class Main {
         double rangeMin = -13.0;
         double rangeMax = 11.0;
         for (int i = 0; i < 12; i++) {
-            Random r = new Random(48);
-            x[i] = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+            x[i] = rangeMin + (rangeMax - rangeMin) * random();
         }
         //3
         double dd[][] = new double[14][12];
