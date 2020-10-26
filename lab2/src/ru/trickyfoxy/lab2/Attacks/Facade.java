@@ -15,7 +15,9 @@ public class Facade extends PhysicalMove {
 
     @Override
     protected void applyOppEffects(Pokemon pokemon) {
-        if (pokemon.getCondition() == Status.BURN || pokemon.getCondition() == Status.POISON || pokemon.getCondition() == Status.PARALYZE) {
+        if (pokemon.getCondition() == Status.BURN
+                || pokemon.getCondition() == Status.POISON
+                || pokemon.getCondition() == Status.PARALYZE) {
             pokemon.setCondition(new Effect().attack(140));
         }
     }

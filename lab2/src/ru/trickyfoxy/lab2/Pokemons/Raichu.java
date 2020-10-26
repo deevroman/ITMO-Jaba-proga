@@ -22,6 +22,6 @@ public class Raichu extends Pokemon {
         this.addMove(new Thunderbolt());
         this.addMove(new Thunder());
         this.addMove(new Slam());
-//        this.addMove(new DoubleTeam());
+//        this.addMove(new DoubleTeam()); TODO
     }
 }

@@ -2,8 +2,10 @@ package ru.trickyfoxy.lab2.Pokemons;
 
 import ru.ifmo.se.pokemon.Pokemon;
 import ru.ifmo.se.pokemon.Type;
-import ru.trickyfoxy.lab2.Attacks.*;
-import ru.trickyfoxy.lab2.Main;
+import ru.trickyfoxy.lab2.Attacks.DarkPulse;
+import ru.trickyfoxy.lab2.Attacks.FlashCannon;
+import ru.trickyfoxy.lab2.Attacks.Swagger;
+import ru.trickyfoxy.lab2.Attacks.Thunder;
 
 public class Deoxys extends Pokemon {
 
