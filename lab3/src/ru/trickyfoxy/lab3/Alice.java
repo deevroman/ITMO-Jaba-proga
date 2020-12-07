@@ -1,5 +1,7 @@
 package ru.trickyfoxy.lab3;
 
+import java.util.Objects;
+
 public class Alice extends Human {
     private Memory memory;
 
@@ -30,6 +32,26 @@ public class Alice extends Human {
         memory.removeFromMemory(type);
         if (type == MemoryActionType.VYROCTANIE)
             System.out.println(this.getName() + " забывает, что опрокинула");
+    }
+
+    @Override
+    public String toString() {
+        return "Alice{" +
+                "memory=" + memory +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Alice alice = (Alice) o;
+        return Objects.equals(memory, alice.memory);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memory);
     }
 
     public void VYROSTI() {

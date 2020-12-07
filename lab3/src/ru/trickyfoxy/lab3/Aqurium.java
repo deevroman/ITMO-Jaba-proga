@@ -1,10 +1,32 @@
 package ru.trickyfoxy.lab3;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Aqurium implements Overturnable {
     private ArrayList<Fish> fishes;
     private final String name = "Аквариум";
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Aqurium aqurium = (Aqurium) o;
+        return Objects.equals(fishes, aqurium.fishes) && Objects.equals(name, aqurium.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Aqurium{" +
+                "fishes=" + fishes +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fishes, name);
+    }
 
     @Override
     public String getName() {

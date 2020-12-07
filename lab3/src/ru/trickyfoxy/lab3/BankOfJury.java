@@ -1,6 +1,7 @@
 package ru.trickyfoxy.lab3;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class BankOfJury implements Overturnable {
     private ArrayList<Jury> arrayOfJury;
@@ -11,6 +12,26 @@ public class BankOfJury implements Overturnable {
 
     public BankOfJury(ArrayList<Jury> arrayOfPrisyagnye) {
         this.arrayOfJury = arrayOfPrisyagnye;
+    }
+
+    @Override
+    public String toString() {
+        return "BankOfJury{" +
+                "arrayOfJury=" + arrayOfJury +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BankOfJury that = (BankOfJury) o;
+        return Objects.equals(arrayOfJury, that.arrayOfJury);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arrayOfJury);
     }
 
     @Override
