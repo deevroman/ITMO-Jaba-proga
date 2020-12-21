@@ -6,7 +6,8 @@ public class Main {
 
     public static void main(String[] args) {
         Alice alice = new Alice();
-
+        alice.growth();
+        
         Fish fish1 = new Fish("Золотая рыбка 1");
         Fish fish2 = new Fish("Золотая рыбка 2");
         ArrayList<Fish> fishArray = new ArrayList<>();
@@ -17,7 +18,7 @@ public class Main {
 
 
         alice.scream("Я-а!");
-        alice.removeFromMemory(MemoryActionType.VYROCTANIE);
+        alice.removeFromMemory(MemoryActionType.GROWTHED);
 
         Jury jury1 = new Jury("Присяжный 1");
         Jury jury2 = new Jury("Присяжный 2");

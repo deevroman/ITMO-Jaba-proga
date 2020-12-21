@@ -11,26 +11,28 @@ public class Alice extends Human {
     }
 
     public void standup(BankOfJury bank) {
-        if (this.memory.check(MemoryActionType.VYROCTANIE) == null) {
+        if (this.memory.check(MemoryActionType.GROWTHED) == null) {
             this.overturn(bank);
-            MemoryAction tmp = this.memory.check(MemoryActionType.OPROKINED);
+            MemoryAction tmp = this.memory.check(MemoryActionType.OVERTURNED);
             if (tmp != null) {
                 System.out.println(this.getName() + " вспомнила что " + tmp.getDescription());
             } else {
-                this.memory.save(new MemoryAction(MemoryActionType.OPROKINED, "опрокинула " + bank.getName()));
+                this.memory.save(new MemoryAction(MemoryActionType.OVERTURNED, "опрокинула " + bank.getName()));
             }
         }
     }
 
     public void overturn(Overturnable obj) {
         System.out.println(this.getName() + " опрокидывает " + obj.getName());
-        this.memory.save(new MemoryAction(MemoryActionType.OPROKINED, "опрокинула " + obj.getName()));
+        this.memory.save(new MemoryAction(MemoryActionType.OVERTURNED, "опрокинула " + obj.getName()));
         obj.overturn();
     }
 
     public void removeFromMemory(MemoryActionType type) {
         memory.removeFromMemory(type);
-        if (type == MemoryActionType.VYROCTANIE)
+        if (type == MemoryActionType.GROWTHED)
+            System.out.println(this.getName() + " забывает, что выросла");
+        else if (type == MemoryActionType.OVERTURNED)
             System.out.println(this.getName() + " забывает, что опрокинула");
     }
 
@@ -54,8 +56,8 @@ public class Alice extends Human {
         return Objects.hash(memory);
     }
 
-    public void VYROSTI() {
-        this.memory.save(new MemoryAction(MemoryActionType.VYROCTANIE, "выросла за посленее время"));
-        System.out.println(this.getName() + "выросла");
+    public void growth() {
+        this.memory.save(new MemoryAction(MemoryActionType.GROWTHED, "выросла за посленее время"));
+        System.out.println(this.getName() + " выросла");
     }
 }

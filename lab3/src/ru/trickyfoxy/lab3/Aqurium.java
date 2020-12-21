@@ -12,7 +12,7 @@ public class Aqurium implements Overturnable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Aqurium aqurium = (Aqurium) o;
-        return Objects.equals(fishes, aqurium.fishes) && Objects.equals(name, aqurium.name);
+        return Objects.equals(fishes, aqurium.fishes);
     }
 
     @Override
