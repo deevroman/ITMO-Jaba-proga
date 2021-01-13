@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab3;
+package ru.trickyfoxy.lab4;
 
 abstract public class Human implements Named {
     private final String name;

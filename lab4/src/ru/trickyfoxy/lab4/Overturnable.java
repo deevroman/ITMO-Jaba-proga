@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab3;
+package ru.trickyfoxy.lab4;
 
 public interface Overturnable extends Named {
     public void overturn() throws BrokeTribunal;

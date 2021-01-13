@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab3;
+package ru.trickyfoxy.lab4;
 
 import java.util.Objects;
 

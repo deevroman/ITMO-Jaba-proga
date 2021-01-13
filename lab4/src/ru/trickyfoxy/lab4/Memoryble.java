@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab3;
+package ru.trickyfoxy.lab4;
 
 public interface Memoryble {
     public void removeFromMemory(MemoryActionType action);

@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab3;
+package ru.trickyfoxy.lab4;
 
 public class Jury extends Human implements Overturnable {
     public Jury(String name) {
