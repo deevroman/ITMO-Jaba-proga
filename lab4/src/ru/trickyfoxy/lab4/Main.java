@@ -44,5 +44,27 @@ public class Main {
             king.scream("пока все присяжные не будут, как подобает, водворены на место. ВСЕ!");
         }
 
+        Alice x = new Alice();
+        Alice.GenderEnds s = new Alice.GenderEnds();
+//
+//        Alice x = new Alice();
+//        Alice.GenderEnds_NoS s = x.new GenderEnds_NoS();
+
+//
+        try {
+            java.lang.reflect.Field f = x.getClass().getDeclaredField("memory");
+            f.setAccessible(true);
+            f.set(x, new Memory());
+            System.out.println((int) f.get(x) );
+
+            throw new Exception();
+        } catch(Exception e){
+            System.out.print("e");
+            throw new NullPointerException();
+        } finally {
+            System.out.print("fin");
+        }
+
+
     }
 }

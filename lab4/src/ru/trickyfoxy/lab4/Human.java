@@ -13,7 +13,12 @@ abstract public class Human implements Named {
         this.name = name;
         this.gender = gender;
     }
-
+    public class GenderEnds {
+        public String getEnd(Gender gender) {
+            if (gender == Gender.FEMALE) return "а";
+            else return "";
+        }
+    }
     public void scream(String text) {
         class SelectorCorrectWord {
             class GenderEnds {
@@ -28,6 +33,9 @@ abstract public class Human implements Named {
             }
         }
         SelectorCorrectWord selector = new SelectorCorrectWord();
+
+//        SelectorCorrectWord a = new SelectorCorrectWord();
+//        SelectorCorrectWord.GenderEnds selector = a.new GenderEnds();
         System.out.println(this.name + " " + selector.getScreamVerb() + ": \"" + text + "\"");
     }
 }

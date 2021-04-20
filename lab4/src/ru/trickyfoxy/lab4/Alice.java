@@ -4,12 +4,24 @@ import java.util.Objects;
 
 public class Alice extends Human {
     private Memory memory;
+    public int z = 100;
 
     public Alice() {
         super("Алиса", Gender.FEMALE);
         this.memory = new Memory();
     }
-
+    public class GenderEnds_NoS {
+        public String getEnd(Gender gender) {
+            if (gender == Gender.FEMALE) return "а";
+            else return "";
+        }
+    }
+    public static class GenderEnds {
+        public String getEnd(Gender gender) {
+            if (gender == Gender.FEMALE) return "а";
+            else return "";
+        }
+    }
     public void standup(BankOfJury bank) throws BrokeTribunal {
         if (this.memory.check(MemoryActionType.GROWTHED) == null) {
             try {
