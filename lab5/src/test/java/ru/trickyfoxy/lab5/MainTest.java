@@ -1,18 +1,24 @@
 package ru.trickyfoxy.lab5;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.xml.sax.SAXException;
 import ru.trickyfoxy.lab5.collection.*;
 import ru.trickyfoxy.lab5.commands.CommandsManager;
 import ru.trickyfoxy.lab5.utils.ReadWriteInterface;
 
+import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MainTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -82,6 +88,38 @@ class MainTest {
 
         RouteStorageImpl correct = new RouteStorageImpl();
         correct.add(new Route(1L,
+                "name",
+                new Coordinates(1F, 1),
+                new Date(),
+                new LocationFrom(1, 1D, 1F, "name"),
+                new LocationTo(1, 1, "name"),
+                2));
+        assertTrue(storage.equalsStorage(correct));
+    }
+
+    @Test
+    void testMainUpdateStorage() throws IOException, ParseException, JAXBException, SAXException {
+        System.setIn(new FileInputStream(prefixTestDir + "testMainUpdateCollectionStorage/testMainUpdateCollectionStorage.input"));
+        ReadWriteInterface readWriteInterface = new ReadWriteInterface(
+                new InputStreamReader(System.in, StandardCharsets.UTF_8),
+                new OutputStreamWriter(System.out, StandardCharsets.UTF_8),
+                true,
+                "");
+        RouteStorageImpl storage = new RouteStorageImpl();
+        storage.readStorageXMLFile("src/test/resources/main/testMainUpdateCollectionStorage/storage.xml");
+        CommandsManager.getInstance().loop(readWriteInterface, storage);
+
+        RouteStorageImpl correct = new RouteStorageImpl();
+        correct.add(new Route(
+                1L,
+                "ЛОЛ",
+                new Coordinates(48.0F, -48),
+                new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"),
+                new LocationFrom(4, 42.9, (float) 1.2, "SPB"),
+                new LocationTo(4, 41, "MSK"),
+                19.2f
+        ));
+        correct.add(new Route(13L,
                 "name",
                 new Coordinates(1F, 1),
                 new Date(),

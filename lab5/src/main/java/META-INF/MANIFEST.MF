@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: ru.trickyfoxy.lab5.Main
+
