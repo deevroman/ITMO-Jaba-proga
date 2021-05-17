@@ -1,24 +1,25 @@
 package ru.trickyfoxy.lab6.client;
 
+import ru.trickyfoxy.lab6.client.utils.Connector;
 import ru.trickyfoxy.lab6.collection.RouteStorageImpl;
 import ru.trickyfoxy.lab6.commands.CommandsManager;
-import ru.trickyfoxy.lab6.commands.Hello;
 import ru.trickyfoxy.lab6.exceptions.ExitFromScriptException;
+import ru.trickyfoxy.lab6.exceptions.TimeoutConnectionException;
 import ru.trickyfoxy.lab6.utils.ReadWriteInterface;
-import ru.trickyfoxy.lab6.utils.reciverAnswer;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+
+
 public class Client {
     private static final int port = 1337;
-
-    private static Scanner fromKeyboard;
-    private static ObjectOutputStream toServer;
-    private static ObjectInputStream fromServer;
+    private static final int timeout = 500000;
 
     public static void main(String[] args) {
         Client client = new Client();
@@ -33,35 +34,30 @@ public class Client {
                 true,
                 "");
         try (Scanner scanner = new Scanner(System.in)) {
-            fromKeyboard = scanner;
             String host = "localhost";
             if (args.length > 0) {
                 host = args[0];
             }
             while (true) {
-                try (Socket outcoming = new Socket()) {
+                try {
                     System.out.println("Подключение ...");
-                    outcoming.connect(new InetSocketAddress(host, port), 2000);
-
-                    BufferedInputStream fromServer = new BufferedInputStream(outcoming.getInputStream());
-                    ObjectOutputStream toServer = new ObjectOutputStream(outcoming.getOutputStream());
-                    toServer.writeObject(new Hello());
-                    String result = (String) reciverAnswer.reciverAnswer(fromServer);
-                    System.out.println(result);
-                    outcoming.close();
+                    Connector connector = new Connector(new InetSocketAddress(host, port), timeout);
+                    connector.connect();
+                    System.out.println("Соединение установлено.");
+                    connector.disconnect();
 
                     try {
-                        CommandsManager.getInstance().loop(readWriteInterface, storage, new InetSocketAddress(host, port));
+                        CommandsManager.getInstance().loop(readWriteInterface, storage, connector);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                    } catch (ExitFromScriptException e){
+                    } catch (ExitFromScriptException e) {
                         break;
                     }
                     break;
-                } catch (IOException e) {
+                } catch (IOException | TimeoutConnectionException e) {
                     System.err.println("Не могу подключиться к " + host + ":" + port + ". Подключиться ещё раз? yes/no");
                     String answer;
-                    while (!(answer = fromKeyboard.nextLine()).equals("yes")) {
+                    while (!(answer = scanner.nextLine()).equals("yes")) {
                         switch (answer) {
                             case "":
                                 break;

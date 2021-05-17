@@ -2,6 +2,7 @@ package ru.trickyfoxy.lab6.collection;
 
 import org.xml.sax.SAXException;
 import ru.trickyfoxy.lab6.exceptions.NoUniqueId;
+import ru.trickyfoxy.lab6.exceptions.NotFountId;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
@@ -160,14 +161,16 @@ public class RouteStorageImpl implements RouteStorage {
     }
 
     @Override
-    public boolean update(long id, Route route) {
-        return false;
+    public void update(long id, Route route) throws NotFountId {
+        if (!this.containsId(id)) {
+            throw new NotFountId("Такого id нет в коллекции");
+        }
+        route.setId(id);
+        route.setCreationDate(new Date());
+        this.removeById(id);
+        this.add(route);
     }
 
-    @Override
-    public boolean checkKey(long key) {
-        return false;
-    }
 
     @Override
     public int CountLessThanDistance(float distance) {
@@ -257,142 +260,6 @@ public class RouteStorageImpl implements RouteStorage {
         storage.add(route);
     }
 
-//        /**
-//     * Заполнять Storage значениями из XML файла
-//     *
-//     * @param filePath Путь к XML файлу
-//     * @throws IOException
-//     * @throws SAXException
-//     * @throws ParserConfigurationException
-//     */
-/*
-    public void readRouteXMLFile(String filePath) throws IOException, SAXException, ParserConfigurationException, ParseException {
-
-
-        if (!Files.exists(Paths.get(filePath))) {
-            File f = new File(filePath);
-            f.createNewFile();
-            throw new FileNotFoundException("Файл не найден. Создан новый с таким же именем");
-        }
-
-        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = documentBuilder.parse(filePath);
-        pathForSave = filePath;
-
-        storage.clear();
-        NodeList Routes = document.getDocumentElement().getChildNodes();
-        for (int i = 0; i < Routes.getLength(); i++) {
-            Node node = Routes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Route route = new Route();
-                NodeList fields = node.getChildNodes();
-                for (int indexCurrentRouteField = 0; indexCurrentRouteField < fields.getLength(); indexCurrentRouteField++) {
-                    Node currentRouteField = fields.item(indexCurrentRouteField);
-                    if (fields.item(indexCurrentRouteField).getNodeType() == Node.TEXT_NODE) {
-                        continue;
-                    }
-                    switch (currentRouteField.getNodeName()) {
-                        case "id": {
-                            route.setId(Long.parseLong(currentRouteField.getTextContent()));
-                            break;
-                        }
-                        case "name": {
-                            route.setName(currentRouteField.getTextContent());
-                            break;
-                        }
-                        case "coordinates": {
-                            NodeList NodeCoordinates = currentRouteField.getChildNodes();
-                            Coordinates coordinates = new Coordinates();
-
-                            for (int k = 0; k < NodeCoordinates.getLength(); k++) {
-                                if (NodeCoordinates.item(k).getNodeType() == Node.TEXT_NODE) {
-                                    continue;
-                                }
-                                switch (NodeCoordinates.item(k).getNodeName()) {
-                                    case "x":
-                                        coordinates.setX(Float.parseFloat(NodeCoordinates.item(k).getTextContent()));
-                                        break;
-                                    case "y":
-                                        coordinates.setY(Long.parseLong(NodeCoordinates.item(k).getTextContent()));
-                                        break;
-                                    default:
-                                        throw new InvalidInputException("Неизвестное поле в классе LocationFrom");
-                                }
-                            }
-                            route.setCoordinates(coordinates);
-                            break;
-                        }
-
-                        case "creationDate": {
-                            route.setCreationDate(new SimpleDateFormat("yyyy-MM-dd").parse(currentRouteField.getTextContent()));
-                            break;
-                        }
-                        case "from": {
-                            NodeList NodeLocationFrom = currentRouteField.getChildNodes();
-                            LocationFrom from = new LocationFrom();
-                            for (int k = 0; k < NodeLocationFrom.getLength(); k++) {
-                                if (NodeLocationFrom.item(k).getNodeType() == Node.TEXT_NODE) {
-                                    continue;
-                                }
-                                switch (NodeLocationFrom.item(k).getNodeName()) {
-                                    case "x":
-                                        from.setX(Integer.parseInt(NodeLocationFrom.item(k).getTextContent()));
-                                        break;
-                                    case "y":
-                                        from.setY(Double.parseDouble(NodeLocationFrom.item(k).getTextContent()));
-                                        break;
-                                    case "z":
-                                        from.setZ(Float.parseFloat(NodeLocationFrom.item(k).getTextContent()));
-                                        break;
-                                    case "name":
-                                        from.setName(NodeLocationFrom.item(k).getTextContent());
-                                        break;
-                                    default:
-                                        throw new InvalidInputException("Неизвестное поле в классе LocationFrom");
-                                }
-                            }
-                            route.setFrom(from);
-                            break;
-                        }
-                        case "to": {
-                            NodeList NodeLocationTo = currentRouteField.getChildNodes();
-                            LocationTo to = new LocationTo();
-                            for (int k = 0; k < NodeLocationTo.getLength(); k++) {
-                                if (NodeLocationTo.item(k).getNodeType() == Node.TEXT_NODE) {
-                                    continue;
-                                }
-                                switch (NodeLocationTo.item(k).getNodeName()) {
-                                    case "x":
-                                        to.setX(Integer.parseInt(NodeLocationTo.item(k).getTextContent()));
-                                        break;
-                                    case "y":
-                                        to.setY(Integer.parseInt(NodeLocationTo.item(k).getTextContent()));
-                                        break;
-                                    case "name":
-                                        to.setName(NodeLocationTo.item(k).getTextContent());
-                                        break;
-                                    default:
-                                        throw new InvalidInputException("Неизвестное поле в классе LocationFrom");
-                                }
-                            }
-                            route.setTo(to);
-                            break;
-                        }
-                        case "distance": {
-                            route.setDistance(Float.parseFloat(currentRouteField.getTextContent()));
-                            break;
-                        }
-                        default:
-                            throw new InvalidInputException("Неизвестное поле в классе Route");
-
-                    }
-                }
-                add(route);
-            }
-        }
-    }
-*/
-
     private void generateAndSetSchema(JAXBContext jaxbContext, Unmarshaller unmarshaller) throws SAXException, IOException {
 
         // generate schema
@@ -454,105 +321,5 @@ public class RouteStorageImpl implements RouteStorage {
         jaxbMarshaller.marshal(this, new File(filePath));
     }
 
-/*
-    public void toXMLFile(String filePath) throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.newDocument();
-        Element root = doc.createElement("root");
-        for (Route cur : storage) {
-            Element route = doc.createElement("Route");
-            {
-                Element eId = doc.createElement("id");
-                eId.setTextContent(String.valueOf(cur.getId()));
-                route.appendChild(eId);
-            }
-            {
-                Element eName = doc.createElement("name");
-                eName.setTextContent(cur.getName());
-                route.appendChild(eName);
-            }
-            {
-                Element eCoo = doc.createElement("coordinates");
-                Coordinates coordinates = cur.getCoordinates();
-                Element eCooX = doc.createElement("x");
-                eCooX.setTextContent(String.valueOf(coordinates.getX()));
-                Element eCooY = doc.createElement("y");
-                eCooY.setTextContent(String.valueOf(coordinates.getY()));
-                eCoo.appendChild(eCooX);
-                eCoo.appendChild(eCooY);
-                route.appendChild(eCoo);
-            }
-            {
-                Element eDate = doc.createElement("creationDate");
-                eDate.setTextContent(new SimpleDateFormat("yyyy-MM-dd").format(cur.getCreationDate()));
-                route.appendChild(eDate);
-            }
-            {
-                Element From = doc.createElement("from");
-                LocationFrom locationFrom = cur.getFrom();
-                Element FromX = doc.createElement("x");
-                FromX.setTextContent(String.valueOf(locationFrom.getX()));
-                Element FromY = doc.createElement("y");
-                FromY.setTextContent(String.valueOf(locationFrom.getY()));
-                Element FromZ = doc.createElement("z");
-                FromZ.setTextContent(String.valueOf(locationFrom.getZ()));
-                Element FromName = doc.createElement("name");
-                FromName.setTextContent(locationFrom.getName());
-                From.appendChild(FromX);
-                From.appendChild(FromY);
-                From.appendChild(FromZ);
-                From.appendChild(FromName);
-                route.appendChild(From);
-            }
-            {
-                Element To = doc.createElement("to");
-                LocationTo locationTo = cur.getTo();
-                Element ToX = doc.createElement("x");
-                ToX.setTextContent(String.valueOf(locationTo.getX()));
-                Element ToY = doc.createElement("y");
-                ToY.setTextContent(String.valueOf(locationTo.getY()));
-                Element ToName = doc.createElement("name");
-                ToName.setTextContent(String.valueOf(locationTo.getName()));
-                To.appendChild(ToX);
-                To.appendChild(ToY);
-                To.appendChild(ToName);
-                route.appendChild(To);
-            }
-            {
-                Element eDistance = doc.createElement("distance");
-                eDistance.setTextContent(String.valueOf(cur.getDistance()));
-                route.appendChild(eDistance);
-            }
-            root.appendChild(route);
-        }
-        doc.appendChild(root);
-        writeDocument(doc, filePath);
-    }
-*/
-/*
-    private void writeDocument(Document document, String path)
-            throws TransformerFactoryConfigurationError {
-        Transformer trf = null;
-        DOMSource src = null;
-        FileOutputStream fos = null;
-        try {
-            trf = TransformerFactory.newInstance()
-                    .newTransformer();
-            src = new DOMSource(document);
-            File f = new File(path);
-            if (!Files.exists(Paths.get(path))) {
-                f.createNewFile();
-            }
-            fos = new FileOutputStream(f);
-
-            StreamResult result = new StreamResult(fos);
-            trf.transform(src, result);
-        } catch (TransformerException e) {
-            e.printStackTrace(System.out);
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        }
-    }*/
 }
 

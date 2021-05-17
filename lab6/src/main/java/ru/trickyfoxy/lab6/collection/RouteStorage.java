@@ -1,6 +1,7 @@
 package ru.trickyfoxy.lab6.collection;
 
 import ru.trickyfoxy.lab6.exceptions.NoUniqueId;
+import ru.trickyfoxy.lab6.exceptions.NotFountId;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,9 +37,8 @@ public interface RouteStorage {
 
     Route min_by_to();
 
-    boolean update(long id, Route route);
+    void update(long id, Route route) throws NotFountId;
 
-    boolean checkKey(long key);
 
     int CountLessThanDistance(float distance);
 

@@ -1,15 +1,14 @@
 package ru.trickyfoxy.lab6.commands;
 
+import ru.trickyfoxy.lab6.client.utils.Connector;
 import ru.trickyfoxy.lab6.collection.RouteStorage;
 import ru.trickyfoxy.lab6.collection.RouteStorageImpl;
 import ru.trickyfoxy.lab6.exceptions.*;
 import ru.trickyfoxy.lab6.utils.ReadWriteInterface;
-import ru.trickyfoxy.lab6.utils.reciverAnswer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -119,7 +118,7 @@ public class CommandsManager {
      * @param IO           IO интерфейс, через который происходит общение с пользователем
      * @param routeStorage Route Storage с которым мы работаем
      */
-    public void loop(ReadWriteInterface IO, RouteStorage routeStorage, InetSocketAddress server) throws IOException {
+    public void loop(ReadWriteInterface IO, RouteStorage routeStorage, Connector connector) throws IOException, TimeoutConnectionException {
         scriptStack.push(new StackLevel(IO, IO.getName()));
         listOfPathScript.add(IO.getName());
 
@@ -146,33 +145,24 @@ public class CommandsManager {
             String scriptPath = null;
             try {
                 cmd.fillArgument(getCurrentIO());
-
-                Socket outcoming = new Socket();
-                outcoming.connect(server, 5000);
-                outcoming.setSoTimeout(50000);
-
-                BufferedInputStream fromServer = new BufferedInputStream(outcoming.getInputStream());
-                ObjectOutputStream toServer = new ObjectOutputStream(outcoming.getOutputStream());
-
                 if (cmd.name.equals("execute_script")) {
-                    cmd.fillArgument(new ReadWriteInterface(new InputStreamReader(System.in),
-                            new OutputStreamWriter(System.out),
-                            true));
                     scriptPath = cmd.execute(new ReadWriteInterface(new InputStreamReader(System.in),
                             new OutputStreamWriter(System.out),
                             true), new RouteStorageImpl());
-                }
-                if (cmd.name.equals("exit")) {
-                    toServer.writeObject(new Save());
                 } else {
-                    toServer.writeObject(cmd);
-                }
-                String result = (String) reciverAnswer.reciverAnswer(fromServer);
+                    connector.connect();
+                    if (cmd.name.equals("exit")) {
+                        connector.sendCommand(new Save());
+                    } else {
+                        connector.sendCommand(cmd);
+                    }
+                    String result = (String) connector.receiver();
 
-                getCurrentIO().writeln(result);
-                outcoming.close();
-                if (cmd.name.equals("exit")) {
-                    throw new ExitFromScriptException();
+                    getCurrentIO().writeln(result);
+                    connector.disconnect();
+                    if (cmd.name.equals("exit")) {
+                        throw new ExitFromScriptException();
+                    }
                 }
             } catch (ExitFromScriptException e) {
                 popFromScriptStack();
@@ -189,6 +179,9 @@ public class CommandsManager {
                 e.printStackTrace();
             } catch (NotFountId notFountId) {
                 notFountId.printStackTrace();
+            } catch (TimeoutConnectionException e) {
+                System.err.println("Превышено время ожидания от сервера");
+                throw e;
             }
 
             if (scriptPath != null) {
@@ -209,7 +202,7 @@ public class CommandsManager {
                         scriptStack.pop();
                     }
                     System.err.println("Найдена рекурсия в запуске команды execute_script");
-                    System.err.println(trace.toString());
+                    System.err.println(trace);
                     resetStack();
                 }
                 listOfPathScript.add(absolutePath);
