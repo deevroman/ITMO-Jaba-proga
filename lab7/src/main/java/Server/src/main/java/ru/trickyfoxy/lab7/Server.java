@@ -23,10 +23,10 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeoutException;
 
 public class Server {
-    private static final int port = 1337;
-    private static final int timeout = 500000;
+    private static final int PORT = 1337;
+    private static final int TIMEOUT = 500000;
 
-    public boolean wakeUpped = false;
+    public boolean isReady = false;
     private final Map<String, Connect> sessionStorage = new HashMap<>();
     private final List<SocketChannel> notificationsList = new ArrayList<>();
     private final RouteStorageImpl storage = new RouteStorageImpl();
@@ -54,19 +54,17 @@ public class Server {
             return;
         }
 
-        try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             ServerSocket serverSocket = serverSocketChannel.socket();
-            serverSocketChannel.bind(new InetSocketAddress(port));
+            serverSocketChannel.bind(new InetSocketAddress(PORT));
             logger.info("Сервер начал слушать клиентов. ");
-            logger.info("Порт " + port + " / Адрес " + serverSocketChannel.getLocalAddress());
-            logger.info("Ожидаем подключения клиентов ");
-            wakeUpped = true;
+            logger.info("Порт " + PORT + " / Адрес " + serverSocketChannel.getLocalAddress());
+            isReady = true;
             while (true) {
                 Socket socket = serverSocket.accept();
                 logger.info("Connection from: " + socket);
                 SocketChannel socketChannel = socket.getChannel();
-                Thread eventReaderThread = new EventReaderThread(socketChannel, new Connect(), timeout, commonPool, notificationsList);
+                Thread eventReaderThread = new EventReaderThread(socketChannel, new Connect(), TIMEOUT, commonPool, notificationsList);
                 eventReaderThread.start();
             }
         } catch (IOException e) {
@@ -92,8 +90,10 @@ public class Server {
             this.notificationsList = notificationsList;
         }
 
+        @Override
         public void run() {
             Event event = null;
+
             while (true) {
                 try {
                     event = EventReceiver.getEvent(socketChannel, connect, timeout);
@@ -103,8 +103,9 @@ public class Server {
                     if (event != null) {
                         sessionStorage.remove(event.session);
                     }
-                    logger.error("Disconnect " + socketChannel);
-                    notifyAllUsers(("Disconnect " + socketChannel), Objects.requireNonNull(event).session);
+                    String message = "Disconnect " + socketChannel;
+                    logger.error(message);
+                    notifyAllUsers(message, Objects.requireNonNull(event).session);
                     break;
                 }
                 if (event != null) {
@@ -167,95 +168,112 @@ public class Server {
 
         @Override
         protected void compute() {
+            if (event == null) {
+                return;
+            }
             try {
-                if (event != null) {
-                    logger.info(String.valueOf(event));
-                    switch (event.eventType) {
-                        case COMMAND: {
-                            try {
-                                if (checkSession(event.session, connect)) {
-                                    Writer outputOfCommand = new StringWriter();
-                                    try {
-                                        event.cmd.execute(new ReadWriteInterface(outputOfCommand), storage, sessionStorage.get(event.session).username);
-                                        AnswerSender.sendAnswer(socketChannel, new ServerAnswer(outputOfCommand.toString(), connect.session));
-                                    } catch (ExitFromScriptException e){
-                                        notifyAllUsers(("Disconnect " + socketChannel), Objects.requireNonNull(event).session);
-                                    } catch (Exception e) {
-                                        logger.error(e.getMessage());
-                                        AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Ошибка сервера. Смотреть логи", event.session, ServerAnswerStatus.SERVER_ERROR));
-                                    }
-                                }
-                            } catch (InvalidLoginException e) {
-                                logger.error("Попытка выполнить команду с неавторизованным токеном");
-                                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Invalid token", null, ServerAnswerStatus.AUTH_ERROR));
-                                socketChannel.finishConnect();
-                            } catch (InvalidTokenExpiredException e) {
-                                logger.error("Попытка выполнить команду с истёкшим токеном");
-                                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Token expired", null, ServerAnswerStatus.AUTH_ERROR));
-                                socketChannel.finishConnect();
-                            }
-                            break;
-                        }
-                        case REGISTER: {
-                            try {
-                                if (databaseManager.register(event.login, event.pass)) {
-                                    logger.info("Пользователь " + event.login + " зарегистрирован");
-                                    connect.createSession(databaseManager.generateSession());
-                                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("ok", connect.session));
-                                } else {
-                                    logger.warn("Опаньки");
-                                }
-                            } catch (SQLException throwables) {
-                                throwables.printStackTrace();
-                            } catch (InvalidLoginException e) {
-                                AnswerSender.sendAnswer(socketChannel, new ServerAnswer(e.getMessage(), "", ServerAnswerStatus.CLIENT_ERROR));
-                            }
-                            socketChannel.finishConnect();
-                            break;
-                        }
-                        case LOGIN: {
-                            try {
-                                if (databaseManager.authClient(event.login, event.pass)) {
-                                    logger.info("Пользователь " + event.login + " авторизован");
-                                    connect.createSession(databaseManager.generateSession());
-                                    connect.username = event.login;
-                                    sessionStorage.put(connect.session, connect);
-                                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("ok", connect.session));
-                                } else {
-                                    logger.warn("Неудачная попытка зайти под пользователем " + event.login);
-                                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Неправильный логин/пароль", null, ServerAnswerStatus.AUTH_ERROR));
-                                    socketChannel.finishConnect();
-                                }
-                            } catch (SQLException throwables) {
-                                logger.error("Не могу подключиться к бд");
-                            }
-                            break;
-                        }
-                        case REGISTER_LISTEN_NOTIFIER: {
-                            try {
-                                if (checkSession(event.session, connect)) {
-                                    try {
-                                        notificationsList.add(socketChannel);
-                                        logger.info(socketChannel.socket() + " добавлен в список расслыки");
-                                    } catch (Exception e) {
-                                        logger.error(e.getMessage());
-                                        AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Ошибка сервера. Смотреть логи", event.session, ServerAnswerStatus.SERVER_ERROR));
-                                    }
-                                }
-                            } catch (InvalidLoginException e) {
-                                logger.error("Попытка выполнить команду с неавторизованным токеном");
-                                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Invalid token", null, ServerAnswerStatus.AUTH_ERROR));
-                                socketChannel.finishConnect();
-                            } catch (InvalidTokenExpiredException e) {
-                                logger.error("Попытка выполнить команду с истёкшим токеном");
-                                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Token expired", null, ServerAnswerStatus.AUTH_ERROR));
-                                socketChannel.finishConnect();
-                            }
-                        }
+                logger.info(event.toString());
+                switch (event.eventType) {
+                    case COMMAND: {
+                        commandEventHandler();
+                        break;
+                    }
+                    case REGISTER: {
+                        registerEventHandler();
+                        break;
+                    }
+                    case LOGIN: {
+                        loginEventHandler();
+                        break;
+                    }
+                    case REGISTER_LISTEN_NOTIFIER: {
+                        registerListenNotifierEventHandler();
+                        break;
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+
+        private void registerListenNotifierEventHandler() throws IOException {
+            try {
+                if (checkSession(event.session, connect)) {
+                    try {
+                        notificationsList.add(socketChannel);
+                        logger.info(socketChannel.socket() + " добавлен в список рассылки");
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
+                        AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Ошибка сервера. Смотреть логи", event.session, ServerAnswerStatus.SERVER_ERROR));
+                    }
+                }
+            } catch (InvalidLoginException e) {
+                logger.error("Попытка выполнить команду с неавторизованным токеном");
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Invalid token", null, ServerAnswerStatus.AUTH_ERROR));
+                socketChannel.finishConnect();
+            } catch (InvalidTokenExpiredException e) {
+                logger.error("Попытка выполнить команду с истёкшим токеном");
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Token expired", null, ServerAnswerStatus.AUTH_ERROR));
+                socketChannel.finishConnect();
+            }
+        }
+
+        private void loginEventHandler() throws IOException {
+            try {
+                if (databaseManager.authClient(event.login, event.pass)) {
+                    logger.info("Пользователь " + event.login + " авторизован");
+                    connect.createSession(databaseManager.generateSession());
+                    connect.username = event.login;
+                    sessionStorage.put(connect.session, connect);
+                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("ok", connect.session));
+                } else {
+                    logger.warn("Неудачная попытка зайти под пользователем " + event.login);
+                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Неправильный логин/пароль", null, ServerAnswerStatus.AUTH_ERROR));
+                    socketChannel.finishConnect();
+                }
+            } catch (SQLException throwables) {
+                logger.error("Не могу подключиться к бд");
+            }
+        }
+
+        private void registerEventHandler() throws IOException {
+            try {
+                if (databaseManager.register(event.login, event.pass)) {
+                    logger.info("Пользователь " + event.login + " зарегистрирован");
+                    connect.createSession(databaseManager.generateSession());
+                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer("ok", connect.session));
+                } else {
+                    logger.warn("Опаньки");
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } catch (InvalidLoginException e) {
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer(e.getMessage(), "", ServerAnswerStatus.CLIENT_ERROR));
+            }
+            socketChannel.finishConnect();
+        }
+
+        void commandEventHandler() throws IOException {
+            try {
+                checkSession(event.session, connect);
+            } catch (InvalidLoginException e) {
+                logger.error("Попытка выполнить команду с неавторизованным токеном");
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Invalid token", null, ServerAnswerStatus.AUTH_ERROR));
+                socketChannel.finishConnect();
+            } catch (InvalidTokenExpiredException e) {
+                logger.error("Попытка выполнить команду с истёкшим токеном");
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Token expired", null, ServerAnswerStatus.AUTH_ERROR));
+                socketChannel.finishConnect();
+            }
+            try {
+                Writer outputOfCommand = new StringWriter();
+                event.cmd.execute(new ReadWriteInterface(outputOfCommand), storage, sessionStorage.get(event.session).username);
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer(outputOfCommand.toString(), connect.session));
+            } catch (ExitFromScriptException e) {
+                notifyAllUsers(("Disconnect " + socketChannel), Objects.requireNonNull(event).session);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Ошибка сервера. Смотреть логи", event.session, ServerAnswerStatus.SERVER_ERROR));
             }
         }
     }

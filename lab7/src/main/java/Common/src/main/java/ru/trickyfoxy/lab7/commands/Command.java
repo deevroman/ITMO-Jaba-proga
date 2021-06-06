@@ -1,19 +1,18 @@
 package ru.trickyfoxy.lab7.commands;
 
 import ru.trickyfoxy.lab7.collection.Route;
+import ru.trickyfoxy.lab7.collection.RouteStorage;
 import ru.trickyfoxy.lab7.exceptions.InvalidFieldException;
 import ru.trickyfoxy.lab7.exceptions.NoUniqueId;
 import ru.trickyfoxy.lab7.exceptions.NotFountId;
-import ru.trickyfoxy.lab7.collection.RouteStorage;
 import ru.trickyfoxy.lab7.utils.ReadWriteInterface;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.SQLException;
 
-abstract public class Command implements Serializable {
+public abstract class Command implements Serializable {
     protected String name;
     protected Route route;
     protected String argument;

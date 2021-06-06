@@ -113,9 +113,8 @@ public class Route implements Comparable<Route>, Serializable {
         this.name = "";
         this.coordinates = new Coordinates();
         this.creationDate = new Date();
-        this.from = from;
-        this.to = to;
-        this.distance = distance;
+        this.from = new LocationFrom();
+        this.to = new LocationTo();
     }
 
     public Route(Long id, String name, Coordinates coordinates, Date creationDate, LocationFrom from, LocationTo to, float distance) {

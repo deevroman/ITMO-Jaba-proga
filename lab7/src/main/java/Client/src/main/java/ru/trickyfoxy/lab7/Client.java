@@ -1,6 +1,5 @@
 package ru.trickyfoxy.lab7;
 
-import ru.trickyfoxy.lab7.collection.RouteStorageImpl;
 import ru.trickyfoxy.lab7.commands.CommandsManager;
 import ru.trickyfoxy.lab7.exceptions.ExitFromScriptException;
 import ru.trickyfoxy.lab7.exceptions.TimeoutConnectionException;
@@ -16,8 +15,8 @@ import java.util.Scanner;
 
 
 public class Client {
-    private static final int port = 1337;
-    private static final int timeout = 500000;
+    private static final int PORT = 1337;
+    private static final int TIMEOUT = 500000;
     Scanner consoleInput = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -51,7 +50,8 @@ public class Client {
     }
 
     private static class LoginAndPass {
-        String login, pass;
+        String login;
+        String pass;
 
         public LoginAndPass(String login, String pass) {
             this.login = login;
@@ -68,7 +68,6 @@ public class Client {
     }
 
     public void run(String[] args) {
-        RouteStorageImpl storage = new RouteStorageImpl();
         ReadWriteInterface readWriteInterface = new ReadWriteInterface(
                 new InputStreamReader(System.in, StandardCharsets.UTF_8),
                 new OutputStreamWriter(System.out, StandardCharsets.UTF_8),
@@ -80,7 +79,8 @@ public class Client {
             host = args[0];
         }
         LoginAndPass loginAndPass;
-        String username, password;
+        String username;
+        String password;
         username = "kek";
         password = "lol";
         while (true) {
@@ -91,7 +91,7 @@ public class Client {
                     password = loginAndPass.pass;
                 }
                 System.out.print("Подключение ...");
-                Connector connector = new Connector(new InetSocketAddress(host, port), timeout);
+                Connector connector = new Connector(new InetSocketAddress(host, PORT), TIMEOUT);
                 connector.connect();
                 System.out.println("Соединение установлено.");
 
@@ -138,7 +138,7 @@ public class Client {
                         }
                     }
                 }
-                notifier = new Notifier(new Connector(new InetSocketAddress(host, port), timeout, connector.getSession()));
+                notifier = new Notifier(new Connector(new InetSocketAddress(host, PORT), TIMEOUT, connector.getSession()));
                 notifier.start();
                 try {
                     CommandsManager.getInstance().loop(readWriteInterface, connector);
@@ -152,7 +152,7 @@ public class Client {
                 if (notifier != null) {
                     notifier.interrupt();
                 }
-                System.err.println("Не могу подключиться к " + host + ":" + port + ". Подключиться ещё раз? yes/no");
+                System.err.println("Не могу подключиться к " + host + ":" + PORT + ". Подключиться ещё раз? yes/no");
                 String answer;
                 while (!(answer = consoleInput.nextLine()).equals("yes")) {
                     switch (answer) {
@@ -178,6 +178,7 @@ public class Client {
             this.connector = connector;
         }
 
+        @Override
         public void run() {
             while (true) {
                 if (this.isInterrupted()) {
