@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>ru.trickyfoxy.lab2.Attacks</OriginalElement>
+  <nodes>
+    <node x="0.0" y="258.0">ru.ifmo.se.pokemon.StatusMove</node>
+    <node x="334.25" y="418.0">ru.trickyfoxy.lab2.Attacks.Thunder</node>
+    <node x="457.25" y="418.0">ru.trickyfoxy.lab2.Attacks.DarkPulse</node>
+    <node x="534.5" y="338.0">ru.trickyfoxy.lab2.Attacks.Slam</node>
+    <node x="26.25" y="418.0">ru.trickyfoxy.lab2.Attacks.Thunderbolt</node>
+    <node x="134.5" y="338.0">ru.trickyfoxy.lab2.Attacks.Facade</node>
+    <node x="634.5" y="338.0">ru.trickyfoxy.lab2.Attacks.StoneEdge</node>
+    <node x="169.0" y="0.0">ru.ifmo.se.pokemon.Move</node>
+    <node x="396.0" y="258.0">ru.ifmo.se.pokemon.DamageMove</node>
+    <node x="403.5" y="338.0">ru.trickyfoxy.lab2.Attacks.LowSweep</node>
+    <node x="249.5" y="338.0">ru.ifmo.se.pokemon.SpecialMove</node>
+    <node x="11.5" y="338.0">ru.trickyfoxy.lab2.Attacks.Swagger</node>
+    <node x="180.25" y="418.0">ru.trickyfoxy.lab2.Attacks.FlashCannon</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ru.trickyfoxy.lab2.Attacks.Thunder" target="ru.ifmo.se.pokemon.SpecialMove">
+      <point x="0.0" y="-15.0" />
+      <point x="385.75" y="398.0" />
+      <point x="333.25" y="398.0" />
+      <point x="16.75" y="15.0" />
+    </edge>
+    <edge source="ru.ifmo.se.pokemon.SpecialMove" target="ru.ifmo.se.pokemon.DamageMove">
+      <point x="0.0" y="-15.0" />
+      <point x="316.5" y="318.0" />
+      <point x="433.8" y="318.0" />
+      <point x="-25.19999999999999" y="15.0" />
+    </edge>
+    <edge source="ru.ifmo.se.pokemon.StatusMove" target="ru.ifmo.se.pokemon.Move">
+      <point x="0.0" y="-15.0" />
+      <point x="63.0" y="233.0" />
+      <point x="215.0" y="233.0" />
+      <point x="-46.0" y="104.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.LowSweep" target="ru.ifmo.se.pokemon.DamageMove">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.Facade" target="ru.ifmo.se.pokemon.DamageMove">
+      <point x="0.0" y="-15.0" />
+      <point x="182.0" y="308.0" />
+      <point x="408.6" y="308.0" />
+      <point x="-50.39999999999998" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.FlashCannon" target="ru.ifmo.se.pokemon.SpecialMove">
+      <point x="0.0" y="-15.0" />
+      <point x="247.25" y="398.0" />
+      <point x="299.75" y="398.0" />
+      <point x="-16.75" y="15.0" />
+    </edge>
+    <edge source="ru.ifmo.se.pokemon.DamageMove" target="ru.ifmo.se.pokemon.Move">
+      <point x="0.0" y="-15.0" />
+      <point x="459.0" y="233.0" />
+      <point x="307.0" y="233.0" />
+      <point x="46.0" y="104.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.DarkPulse" target="ru.ifmo.se.pokemon.SpecialMove">
+      <point x="0.0" y="-15.0" />
+      <point x="516.75" y="388.0" />
+      <point x="366.75" y="388.0" />
+      <point x="50.25" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.Thunderbolt" target="ru.ifmo.se.pokemon.SpecialMove">
+      <point x="0.0" y="-15.0" />
+      <point x="93.25" y="388.0" />
+      <point x="266.25" y="388.0" />
+      <point x="-50.25" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.StoneEdge" target="ru.ifmo.se.pokemon.DamageMove">
+      <point x="0.0" y="-15.0" />
+      <point x="694.0" y="308.0" />
+      <point x="509.4" y="308.0" />
+      <point x="50.39999999999998" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.Slam" target="ru.ifmo.se.pokemon.DamageMove">
+      <point x="0.0" y="-15.0" />
+      <point x="574.5" y="318.0" />
+      <point x="484.20000000000005" y="318.0" />
+      <point x="25.200000000000045" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Attacks.Swagger" target="ru.ifmo.se.pokemon.StatusMove">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="528.5" y="165.0" />
+  <SelectedNodes>
+    <node>ru.ifmo.se.pokemon.StatusMove</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

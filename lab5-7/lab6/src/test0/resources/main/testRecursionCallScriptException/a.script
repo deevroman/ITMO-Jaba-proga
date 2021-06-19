@@ -1,0 +1,1 @@
+execute_script src/test/resources/main/testRecursionCallScriptException/a.script

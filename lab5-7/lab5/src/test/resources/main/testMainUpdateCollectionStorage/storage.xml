@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<storage>
+    <route>
+        <id>1</id>
+        <name>ЛОЛ</name>
+        <coordinates>
+            <x>48.0</x>
+            <y>-48</y>
+        </coordinates>
+        <creationDate>2020-01-01</creationDate>
+        <from>
+            <x>4</x>
+            <y>42.9</y>
+            <z>1.2</z>
+            <name>SPB</name>
+        </from>
+        <to>
+            <x>4</x>
+            <y>41</y>
+            <name>MSK</name>
+        </to>
+        <distance>19.2</distance>
+    </route>
+    <route>
+        <id>13</id>
+        <name>КЕК</name>
+        <coordinates>
+            <x>4.0</x>
+            <y>-8</y>
+        </coordinates>
+        <creationDate>2000-01-01</creationDate>
+        <from>
+            <x>41</x>
+            <y>542.9</y>
+            <z>51.2</z>
+            <name>QSPB</name>
+        </from>
+        <to>
+            <x>24</x>
+            <y>341</y>
+            <name>WMSK</name>
+        </to>
+        <distance>89.2</distance>
+    </route>
+</storage>

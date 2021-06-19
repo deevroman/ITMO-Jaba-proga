@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>ru.trickyfoxy.lab2.Pokemons</OriginalElement>
+  <nodes>
+    <node x="0.0" y="90.0">ru.trickyfoxy.lab2.Pokemons.Raichu</node>
+    <node x="476.0" y="90.0">ru.trickyfoxy.lab2.Pokemons.Pichu</node>
+    <node x="353.0" y="90.0">ru.trickyfoxy.lab2.Pokemons.Pikachu</node>
+    <node x="583.0" y="90.0">ru.trickyfoxy.lab2.Pokemons.Hitmonlee</node>
+    <node x="115.00000000000003" y="90.0">ru.trickyfoxy.lab2.Pokemons.Tyrogue</node>
+    <node x="293.5" y="0.0">ru.ifmo.se.pokemon.Pokemon</node>
+    <node x="238.00000000000003" y="90.0">ru.trickyfoxy.lab2.Pokemons.Deoxys</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Pichu" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="519.5" y="60.0" />
+      <point x="370.75" y="60.0" />
+      <point x="25.75" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Tyrogue" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="166.50000000000003" y="60.0" />
+      <point x="319.25" y="60.0" />
+      <point x="-25.75" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Raichu" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="47.5" y="50.0" />
+      <point x="302.08333333333337" y="50.0" />
+      <point x="-42.916666666666686" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Deoxys" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="285.5" y="70.0" />
+      <point x="336.41666666666674" y="70.0" />
+      <point x="-8.583333333333314" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Hitmonlee" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="642.5" y="50.0" />
+      <point x="387.91666666666674" y="50.0" />
+      <point x="42.916666666666686" y="15.0" />
+    </edge>
+    <edge source="ru.trickyfoxy.lab2.Pokemons.Pikachu" target="ru.ifmo.se.pokemon.Pokemon">
+      <point x="0.0" y="-15.0" />
+      <point x="404.5" y="70.0" />
+      <point x="353.58333333333337" y="70.0" />
+      <point x="8.583333333333314" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="187.5" y="127.5" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
