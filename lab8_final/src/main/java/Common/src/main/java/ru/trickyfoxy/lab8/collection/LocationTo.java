@@ -1,7 +1,6 @@
 package ru.trickyfoxy.lab8.collection;
 
 import ru.trickyfoxy.lab8.exceptions.InvalidFieldException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
@@ -15,9 +14,7 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder = {"x", "y", "name"})
 public class LocationTo implements Comparable<LocationTo>, Serializable {
-    @NotNull
     public Integer x; //Поле не может быть null
-    @NotNull
     public Integer y; //Поле не может быть null
     public String name; //Длина строки не должна быть больше 588, Поле может быть null
 

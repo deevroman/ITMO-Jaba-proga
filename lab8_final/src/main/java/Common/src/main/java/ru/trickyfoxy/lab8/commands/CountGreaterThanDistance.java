@@ -17,7 +17,7 @@ public class CountGreaterThanDistance extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException {
         float distance = Float.parseFloat(argument);
         readWriteInterface.writeln(String.valueOf(routeStorage.CountLessThanDistance(distance)));
         return null;

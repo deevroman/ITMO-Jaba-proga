@@ -18,10 +18,11 @@ public class RemoveAnyByDistance extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
         float distance = Float.parseFloat(argument);
         if (routeStorage.getDatabaseManager().removeByDistance(distance, username)
             && routeStorage.remove_any_by_distance(distance)) {
+            updated[0] = Boolean.TRUE;
             readWriteInterface.writeln("Элемент с таким distance найден и удалён");
         } else {
             readWriteInterface.writeln("Элемент с таким distance не найден");

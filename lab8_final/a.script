@@ -1,5 +1,4 @@
-help
-update 13
+add 13
 Новое имя
 3
 3
@@ -11,6 +10,3 @@ e
 2
 r
 4
-show
-remove_any_by_distance 19.2
-show

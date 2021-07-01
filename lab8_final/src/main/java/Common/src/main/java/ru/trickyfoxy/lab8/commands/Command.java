@@ -14,7 +14,25 @@ import java.sql.SQLException;
 
 public abstract class Command implements Serializable {
     protected String name;
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
     protected Route route;
+
+    public String getArgument() {
+        return argument;
+    }
+
+    public void setArgument(String argument) {
+        this.argument = argument;
+    }
+
     protected String argument;
 
     protected Command(String name) {
@@ -43,7 +61,23 @@ public abstract class Command implements Serializable {
 
     public abstract void fillArgument(ReadWriteInterface readWriteInterface) throws IOException;
 
-    public abstract String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, NotFountId, NoUniqueId, ParserConfigurationException, InvalidFieldException, SQLException;
+    /**
+     * @param readWriteInterface
+     * @param routeStorage
+     * @param username
+     * @param updated произошло ли обновление коллекции после выполнения команды. Грязный хак для передачи по ссылке
+     * @return
+     * @throws IOException
+     * @throws NotFountId
+     * @throws NoUniqueId
+     * @throws ParserConfigurationException
+     * @throws InvalidFieldException
+     * @throws SQLException
+     */
+    public abstract String execute(ReadWriteInterface readWriteInterface,
+                                   RouteStorage routeStorage,
+                                   String username,
+                                   Boolean[] updated) throws IOException, NotFountId, NoUniqueId, ParserConfigurationException, InvalidFieldException, SQLException;
 
     @Override
     public String toString() {

@@ -21,10 +21,13 @@ public class Add extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
+        route.validate();
         Long id = routeStorage.getDatabaseManager().insertToDB(route, username);
         route.setId(id);
+        route.setCreator(username);
         routeStorage.add(route);
+        updated[0] = Boolean.TRUE;
         readWriteInterface.writeln("Элемент добавлен");
         return null;
     }

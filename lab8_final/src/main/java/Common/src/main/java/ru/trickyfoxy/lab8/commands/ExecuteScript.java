@@ -20,7 +20,7 @@ public class ExecuteScript extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws FileNotFoundException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws FileNotFoundException {
         String path = argument;
         if (!Files.exists(Paths.get(path))) {
             throw new FileNotFoundException("Файл " + path + " не найден");

@@ -17,9 +17,10 @@ public class Clear extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
         routeStorage.getDatabaseManager().clear(username);
         routeStorage.clear(username);
+        updated[0] = Boolean.TRUE;
         readWriteInterface.writeln("Созданные вами элементы очищены");
         return null;
     }

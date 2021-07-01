@@ -1,5 +1,6 @@
 package ru.trickyfoxy.lab8.commands;
 
+import ru.trickyfoxy.lab8.collection.Route;
 import ru.trickyfoxy.lab8.collection.RouteStorage;
 import ru.trickyfoxy.lab8.utils.ReadWriteInterface;
 
@@ -18,9 +19,12 @@ public class RemoveGreater extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
-        routeStorage.getDatabaseManager().removeGreater(route, username);
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
+        routeStorage.getDatabaseManager().removeGreater(Float.parseFloat(argument), username);
+        route = new Route();
+        route.setDistance(Float.parseFloat(argument));
         routeStorage.removeGreater(route, username);
+        updated[0] = Boolean.TRUE;
         return null;
     }
 }

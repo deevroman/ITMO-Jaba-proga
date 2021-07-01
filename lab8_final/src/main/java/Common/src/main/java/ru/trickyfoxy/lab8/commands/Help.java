@@ -16,7 +16,7 @@ public class Help extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (Command cmd : CommandsManager.getInstance().getAllCommands()) {
             sb.append(cmd.getName()).append(": ").append(cmd.getDescription()).append("\n");

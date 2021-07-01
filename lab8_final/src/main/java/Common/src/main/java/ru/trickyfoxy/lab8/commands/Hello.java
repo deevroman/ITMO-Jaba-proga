@@ -7,7 +7,6 @@ import ru.trickyfoxy.lab8.exceptions.NotFountId;
 import ru.trickyfoxy.lab8.utils.ReadWriteInterface;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Hello extends Command {
@@ -20,7 +19,7 @@ public class Hello extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, NotFountId, NoUniqueId, ParserConfigurationException, InvalidFieldException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, NotFountId, NoUniqueId, ParserConfigurationException, InvalidFieldException {
         readWriteInterface.writeln("Соединение установлено.");
         return null;
     }

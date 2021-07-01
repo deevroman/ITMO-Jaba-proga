@@ -17,10 +17,10 @@ public class Info extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException {
-        String sb = "Дата инциализации коллекции: " + new SimpleDateFormat("yyyy-MM-dd").format(routeStorage.getCreationDate()) + "\n" +
-                "Количество элементов в коллекции: " + routeStorage.size() + "\n" +
-                "Тип коллекции: " + routeStorage.getCollectionClass().getName();
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException {
+        String sb = new SimpleDateFormat("yyyy-MM-dd").format(routeStorage.getCreationDate()) + "\n" +
+                routeStorage.size() + "\n" +
+                routeStorage.getCollectionClass().getName();
         readWriteInterface.writeln(sb);
         return null;
         // TODO IDEA bug? Rename bad val broke name

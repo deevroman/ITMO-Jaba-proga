@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -22,8 +23,6 @@ public class RouteStorageImpl implements RouteStorage {
     public Class<?> getCollectionClass() {
         return storage.getClass();
     }
-
-    private String pathForSave;
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
@@ -39,7 +38,7 @@ public class RouteStorageImpl implements RouteStorage {
         storage = databaseManager.getCollection().getStorage();
     }
 
-    private class TreeSetWithUniqueStricktlyAdd<E> extends TreeSet<E> {
+    private class TreeSetWithUniqueStricktlyAdd<E> extends TreeSet<E> implements Serializable {
         public TreeSetWithUniqueStricktlyAdd() {
 
         }
@@ -60,6 +59,10 @@ public class RouteStorageImpl implements RouteStorage {
     @XmlElement(name = "route")
     public TreeSet<Route> getStorage() {
         return storage;
+    }
+
+    public ArrayList<Route> getListElements(){
+        return new ArrayList<>(storage);
     }
 
     public void setStorage(TreeSet<Route> storage) {

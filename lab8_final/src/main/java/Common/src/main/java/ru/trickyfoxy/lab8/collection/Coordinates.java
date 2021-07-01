@@ -1,7 +1,6 @@
 package ru.trickyfoxy.lab8.collection;
 
 import ru.trickyfoxy.lab8.exceptions.InvalidFieldException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
@@ -17,7 +16,6 @@ import java.util.Comparator;
 public class Coordinates implements Comparable<Coordinates>, Serializable {
     public final static float maxX = 717;
     public final static float maxY = 735;
-    @NotNull
     private Float x; //Максимальное значение поля: 717, Поле не может быть null
     private long y; //Максимальное значение поля: 735
 
@@ -26,7 +24,6 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         this.y = y;
     }
 
-    @NotNull
     @XmlElement(name="x")
     public Float getX() {
         return x;
@@ -39,7 +36,6 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         this.x = x;
     }
 
-    @NotNull
     @XmlElement(name="y")
     public long getY() {
         return y;

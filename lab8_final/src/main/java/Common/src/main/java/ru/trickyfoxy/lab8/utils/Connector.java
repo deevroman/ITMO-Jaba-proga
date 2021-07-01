@@ -75,9 +75,10 @@ public class Connector {
         connected = false;
     }
 
-    public void sendEvent( Event cmd) throws IOException {
-        cmd.session = session;
-        toServer.writeObject(cmd);
+    public void sendEvent( Event event) throws IOException {
+        System.out.println("Отправлено: " + event);
+        event.session = session;
+        toServer.writeObject(event);
     }
 
     public void sendCommand( Command cmd) throws IOException {

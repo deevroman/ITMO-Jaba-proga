@@ -18,9 +18,12 @@ public class AddIfMin extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
+        route.validate();
         Double mn = routeStorage.getDatabaseManager().getMinByDistance(username);
+        route.setCreator(username);
         if (mn > route.getDistance() && routeStorage.add_if_max(route)) {
+            updated[0] = Boolean.TRUE;
             readWriteInterface.writeln("Элемент добавлен");
         } else {
             readWriteInterface.writeln("Элемент не добавлен");

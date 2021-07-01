@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 public class CommandsManager {
     public static CommandsManager instance;
 
+    public Map<String, Command> getCommands() {
+        return commands;
+    }
+
     private final Map<String, Command> commands = new HashMap<>();
 
     public static CommandsManager getInstance() {
@@ -148,7 +152,7 @@ public class CommandsManager {
                 if (cmd.name.equals("execute_script")) {
                     scriptPath = cmd.execute(new ReadWriteInterface(new InputStreamReader(System.in),
                             new OutputStreamWriter(System.out),
-                            true), new RouteStorageImpl(), "");
+                            true), new RouteStorageImpl(), "", new Boolean[0]);
                 } else {
                     connector.reconnect();
                     if (cmd.name.equals("exit")) {

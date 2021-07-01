@@ -1,7 +1,6 @@
 package ru.trickyfoxy.lab8.collection;
 
 import ru.trickyfoxy.lab8.exceptions.InvalidRouteFieldException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -19,20 +18,15 @@ import java.util.Objects;
 @XmlType(propOrder = {"id", "name", "coordinates", "creationDate", "from", "to", "distance"})
 public class Route implements Comparable<Route>, Serializable {
 
-    @NotNull
     @XmlElement(name = "id", required = true)
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    @NotNull
     @XmlElement(name = "name", required = true)
     private String name; //Поле не может быть null, Строка не может быть пустой
-    @NotNull
     @XmlElement(name = "coordinates", required = true)
     private Coordinates coordinates; //Поле не может быть null
-    @NotNull
     @XmlElement(name = "creationDate", required = true)
     @XmlJavaTypeAdapter(DateAdapter.class)
     private Date creationDate = new Date(); //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    @NotNull
     @XmlElement(name = "from")
     private LocationFrom from; //Поле не может быть null
     @XmlElement(name = "to")
@@ -48,6 +42,7 @@ public class Route implements Comparable<Route>, Serializable {
     }
 
     private String creator;
+
     public Long getId() {
         return id;
     }
@@ -103,7 +98,7 @@ public class Route implements Comparable<Route>, Serializable {
 
     public void setDistance(float distance) {
         if (distance <= 1) {
-            throw new InvalidRouteFieldException("Поле distance класса Route lолжно быть больше 1");
+            throw new InvalidRouteFieldException("Поле distance класса Route должно быть больше 1");
         }
         this.distance = distance;
     }
@@ -143,6 +138,26 @@ public class Route implements Comparable<Route>, Serializable {
                 .compare(this, o);
     }
 
+    public String[] toStringArray() {
+        return new String[]{
+                id.toString(),
+                name,
+                coordinates.getX().toString(),
+                String.valueOf(coordinates.getY()),
+                new SimpleDateFormat("yyyy-MM-dd").format(creationDate),
+                from.getX().toString(),
+                from.getY().toString(),
+                from.getZ().toString(),
+                from.getName(),
+                to.getX().toString(),
+                to.getY().toString(),
+                to.getName(),
+                String.valueOf(distance),
+                creator
+        };
+
+    }
+
     @Override
     public String toString() {
         return "Route{" +
@@ -156,6 +171,23 @@ public class Route implements Comparable<Route>, Serializable {
                 '}';
     }
 
+    public String printHTML() {
+        return "<html>" + "id=" + id + "<br>" +
+                "name='" + name + '\'' + "<br>" +
+                "coordinates_x=" + coordinates.getX() + "<br>" +
+                "coordinates_y=" + coordinates.getY() + "<br>" +
+                "creationDate=" + new SimpleDateFormat("yyyy-MM-dd").format(creationDate) + "<br>" +
+                "from_x=" + from.getX() + "<br>" +
+                "from_y=" + from.getY() + "<br>" +
+                "from_z=" + from.getZ() + "<br>" +
+                "from_name=" + from.getName() + "<br>" +
+                "to_x=" + to.getX() + "<br>" +
+                "to_y=" + to.getY() + "<br>" +
+                "to_name=" + to.getName() + "<br>" +
+                "distance=" + distance + "<br>" +
+                "creator=" + creator + "</html>";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -164,4 +196,20 @@ public class Route implements Comparable<Route>, Serializable {
         return Float.compare(route.distance, distance) == 0 && id.equals(route.id) && name.equals(route.name) && coordinates.equals(route.coordinates) && from.equals(route.from) && Objects.equals(to, route.to);
     }
 
+    public void validate() {
+        if (name == null || name.equals("")) throw new InvalidRouteFieldException("name не может быть пустым");
+        if (coordinates == null) throw new InvalidRouteFieldException("name не может быть пустым");
+        coordinates.setX(coordinates.getX());
+        coordinates.setY(coordinates.getY());
+        if (from == null) throw new InvalidRouteFieldException("locationFrom не может быть пустым");
+        from.setX(from.getX());
+        from.setY(from.getY());
+        from.setZ(from.getZ());
+        from.setName(from.getName());
+        if (to == null) throw new InvalidRouteFieldException("locationTo не может быть пустым");
+        to.setX(to.getX());
+        to.setY(to.getY());
+        to.setName(to.getName());
+        if (distance <= 1) throw new InvalidRouteFieldException("locationTo не может быть пустым");
+    }
 }

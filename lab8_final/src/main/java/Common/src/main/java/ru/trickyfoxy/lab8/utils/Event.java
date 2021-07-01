@@ -29,7 +29,8 @@ public class Event implements Serializable {
         this.eventType = eventType;
     }
 
-    public Event(EventType registerListenNotifier) {
+    public Event(EventType eventType) {
+        this.eventType = eventType;
     }
 
     @Override

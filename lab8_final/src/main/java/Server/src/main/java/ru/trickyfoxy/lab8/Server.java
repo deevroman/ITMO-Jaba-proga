@@ -11,6 +11,7 @@ import ru.trickyfoxy.lab8.utils.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,12 +24,22 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeoutException;
 
 public class Server {
-    private static final int PORT = 1337;
+    private static int PORT = 1343;
     private static final int TIMEOUT = 500000;
+
+    public class ChannelForNotification {
+        SocketChannel socketChannel;
+        String session;
+
+        public ChannelForNotification(SocketChannel socketChannel, String session) {
+            this.socketChannel = socketChannel;
+            this.session = session;
+        }
+    }
 
     public boolean isReady = false;
     private final Map<String, Connect> sessionStorage = new HashMap<>();
-    private final List<SocketChannel> notificationsList = new ArrayList<>();
+    private final List<ChannelForNotification> notificationsList = new ArrayList<>();
     private final RouteStorageImpl storage = new RouteStorageImpl();
     DatabaseManager databaseManager = null;
     ForkJoinPool commonPool = ForkJoinPool.commonPool();
@@ -56,7 +67,18 @@ public class Server {
 
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             ServerSocket serverSocket = serverSocketChannel.socket();
-            serverSocketChannel.bind(new InetSocketAddress(PORT));
+            while (PORT <= 1400) {
+                try {
+                    serverSocketChannel.bind(new InetSocketAddress(PORT));
+                    break;
+                } catch (BindException e) {
+                    PORT++;
+                    if(PORT > 1400){
+                        logger.error("Не удаётся занять порты");
+                        return;
+                    }
+                }
+            }
             logger.info("Сервер начал слушать клиентов. ");
             logger.info("Порт " + PORT + " / Адрес " + serverSocketChannel.getLocalAddress());
             isReady = true;
@@ -77,12 +99,12 @@ public class Server {
         final Connect connect;
         final int timeout;
         final ForkJoinPool executor;
-        List<SocketChannel> notificationsList;
+        List<ChannelForNotification> notificationsList;
 
         EventReaderThread(SocketChannel socketChannel,
                           Connect connect,
                           int timeout,
-                          ForkJoinPool executor, List<SocketChannel> notificationsList) {
+                          ForkJoinPool executor, List<ChannelForNotification> notificationsList) {
             this.socketChannel = socketChannel;
             this.connect = connect;
             this.timeout = timeout;
@@ -97,47 +119,53 @@ public class Server {
             while (true) {
                 try {
                     event = EventReceiver.getEvent(socketChannel, connect, timeout);
+                    try {
+                        sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 } catch (IOException e) {
                     continue;
                 } catch (TimeoutException e) {
-                    if (event != null) {
-                        sessionStorage.remove(event.session);
-                    }
+                    sessionStorage.remove(connect.session);
                     String message = "Disconnect " + socketChannel;
                     logger.error(message);
-                    notifyAllUsers(message, Objects.requireNonNull(event).session);
+//                    notifyAllUsers(new ServerAnswer(message), connect.session);
                     break;
                 }
                 if (event != null) {
                     commonPool.execute(new HandleEvent(event, new Connect(), socketChannel));
+                    event = null;
                 }
             }
         }
     }
 
-    private void notifyAllUsers(String message, String session) {
+    private void notifyAllUsers(ServerAnswer message, String session) {
         class SendAnswer extends RecursiveAction {
-            final String message;
-            final SocketChannel channel;
+            final ServerAnswer serverAnswer;
+            final ChannelForNotification channel;
 
-            public SendAnswer(String message, SocketChannel channel) {
-                this.message = message;
+            public SendAnswer(ServerAnswer message, ChannelForNotification channel) {
+                this.serverAnswer = message;
                 this.channel = channel;
             }
 
             @Override
             protected void compute() {
                 try {
-                    AnswerSender.sendAnswer(channel, new ServerAnswer("Ошибка сервера. Смотреть логи",
-                            session,
-                            ServerAnswerStatus.NOTIFICATION));
-                    sessionStorage.get(session).expireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
+                    AnswerSender.sendAnswer(channel.socketChannel, new ServerAnswer(serverAnswer.message,
+                            channel.session,
+                            ServerAnswerStatus.NOTIFICATION,
+                            storage.getListElements()));
+                    sessionStorage.get(channel.session).expireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
                 } catch (IOException e) {
                     logger.warn("Не удалось отправить");
                 }
             }
         }
-        for (SocketChannel channel : notificationsList) {
+        logger.info("Рассылаю уведомление");
+        for (ChannelForNotification channel : notificationsList) {
             commonPool.execute(new SendAnswer(message, channel));
         }
     }
@@ -200,7 +228,7 @@ public class Server {
             try {
                 if (checkSession(event.session, connect)) {
                     try {
-                        notificationsList.add(socketChannel);
+                        notificationsList.add(new ChannelForNotification(socketChannel, event.session));
                         logger.info(socketChannel.socket() + " добавлен в список рассылки");
                     } catch (Exception e) {
                         logger.error(e.getMessage());
@@ -267,10 +295,19 @@ public class Server {
             }
             try {
                 Writer outputOfCommand = new StringWriter();
-                event.cmd.execute(new ReadWriteInterface(outputOfCommand), storage, sessionStorage.get(event.session).username);
-                AnswerSender.sendAnswer(socketChannel, new ServerAnswer(outputOfCommand.toString(), connect.session));
+                if (event.cmd.getName().equals("getElements")) {
+                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer(storage.getListElements(), connect.session));
+                } else {
+                    Boolean[] updated = new Boolean[1];
+                    event.cmd.execute(new ReadWriteInterface(outputOfCommand), storage, sessionStorage.get(event.session).username, updated);
+                    AnswerSender.sendAnswer(socketChannel, new ServerAnswer(outputOfCommand.toString(), connect.session));
+                    if (updated[0]) {
+                        notifyAllUsers(new ServerAnswer(), event.session);
+                    }
+                }
+
             } catch (ExitFromScriptException e) {
-                notifyAllUsers(("Disconnect " + socketChannel), Objects.requireNonNull(event).session);
+                notifyAllUsers(new ServerAnswer("Disconnect " + socketChannel), Objects.requireNonNull(event).session);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 AnswerSender.sendAnswer(socketChannel, new ServerAnswer("Ошибка сервера. Смотреть логи", event.session, ServerAnswerStatus.SERVER_ERROR));

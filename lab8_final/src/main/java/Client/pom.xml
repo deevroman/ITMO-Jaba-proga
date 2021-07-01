@@ -31,7 +31,7 @@
                     <finalName>lab8-client</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>ru.trickyfoxy.lab8.Client</mainClass>
+                            <mainClass>ru.trickyfoxy.lab8.ClientApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -18,7 +18,7 @@ public class Save extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, ParserConfigurationException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, ParserConfigurationException {
         try {
             routeStorage.save();
         } catch (JAXBException e) {

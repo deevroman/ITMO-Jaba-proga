@@ -77,7 +77,7 @@ public class DatabaseManager {
             preparedStatement.setString(1, route.getName());
             preparedStatement.setDouble(2, route.getCoordinates().getX());
             preparedStatement.setLong(3, route.getCoordinates().getY());
-            preparedStatement.setTimestamp(4, new Timestamp(route.getCreationDate().getTime()));
+            preparedStatement.setDate(4, new Date(route.getCreationDate().getTime()));
             preparedStatement.setInt(5, route.getFrom().getX());
             preparedStatement.setDouble(6, route.getFrom().getY());
             preparedStatement.setDouble(7, route.getFrom().getZ());
@@ -145,7 +145,7 @@ public class DatabaseManager {
             preparedStatement.setString(1, route.getName());
             preparedStatement.setDouble(2, route.getCoordinates().getX());
             preparedStatement.setLong(3, route.getCoordinates().getY());
-            preparedStatement.setTimestamp(4, new Timestamp(route.getCreationDate().getTime()));
+            preparedStatement.setDate(4, new Date(route.getCreationDate().getTime()));
             preparedStatement.setInt(5, route.getFrom().getX());
             preparedStatement.setDouble(6, route.getFrom().getY());
             preparedStatement.setDouble(7, route.getFrom().getZ());
@@ -184,7 +184,7 @@ public class DatabaseManager {
                 route.setName(resultSet.getString("name"));
                 route.setCoordinates(new Coordinates(resultSet.getFloat("coordinates_x"),
                         resultSet.getInt("coordinates_y")));
-                route.setCreationDate(resultSet.getTimestamp("creationDate"));
+                route.setCreationDate(resultSet.getDate("creationDate"));
                 route.setFrom(new LocationFrom(resultSet.getInt("locationFrom_x"),
                         resultSet.getDouble("locationFrom_y"),
                         resultSet.getFloat("locationFrom_z"),
@@ -212,10 +212,10 @@ public class DatabaseManager {
         }
     }
 
-    public void removeGreater(Route route, String username) throws SQLException {
+    public void removeGreater(float distance, String username) throws SQLException {
         try (Connection connection = DriverManager.getConnection(this.uri, this.user, this.password)) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM collection WHERE distance > ? AND creator = ? ");
-            preparedStatement.setFloat(1, route.getDistance());
+            preparedStatement.setFloat(1, distance);
             preparedStatement.setString(2, username);
             int affectedRows = preparedStatement.executeUpdate();
         }

@@ -15,7 +15,7 @@ public class Exit extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) {
         throw new ExitFromScriptException();
     }
 }

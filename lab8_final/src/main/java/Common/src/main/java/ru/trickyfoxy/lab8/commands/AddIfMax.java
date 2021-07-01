@@ -5,7 +5,6 @@ import ru.trickyfoxy.lab8.utils.ReadWriteInterface;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class AddIfMax extends Command {
     public AddIfMax() {
@@ -19,9 +18,12 @@ public class AddIfMax extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
+        route.validate();
         Double mx = routeStorage.getDatabaseManager().getMaxByDistance(username);
+        route.setCreator(username);
         if (mx < route.getDistance() && routeStorage.add_if_max(route)) {
+            updated[0] = Boolean.TRUE;
             readWriteInterface.writeln("Элемент добавлен");
         } else {
             readWriteInterface.writeln("Элемент не добавлен");

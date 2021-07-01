@@ -19,12 +19,13 @@ public class RemoveById extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws InvalidFieldException, IOException, SQLException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws InvalidFieldException, IOException, SQLException {
         Long id = Long.parseLong(argument);
         if (routeStorage.getDatabaseManager().removeById(id, username)
                 && !routeStorage.removeById(id)) {
             throw new InvalidFieldException("Данного id нет в коллекции");
         } else {
+            updated[0] = Boolean.TRUE;
             readWriteInterface.writeln("Элемент удалён");
         }
         return null;

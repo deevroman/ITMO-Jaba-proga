@@ -16,7 +16,7 @@ public class Show extends Command {
     }
 
     @Override
-    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username) throws IOException {
+    public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException {
         String out = routeStorage.show();
         if (out.equals("")) {
             readWriteInterface.writeln("");
