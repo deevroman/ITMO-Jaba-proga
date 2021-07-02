@@ -143,7 +143,7 @@ public class DatabaseManager {
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE  s311693.collection SET  (name, coordinates_x, coordinates_y, \"creationDate\", \"locationFrom_x\",\n" +
                     "                                \"locationFrom_y\", \"locationFrom_z\", \"locationFrom_name\", \"locationTo_x\", \"locationTo_y\",\n" +
                     "                                \"locationTo_name\", distance, creator)\n" +
-                    "= (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) where creator = ?;\n");
+                    "= (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) where id = ? AND creator = ?;\n");
             preparedStatement.setString(1, route.getName());
             preparedStatement.setDouble(2, route.getCoordinates().getX());
             preparedStatement.setLong(3, route.getCoordinates().getY());
@@ -157,7 +157,8 @@ public class DatabaseManager {
             preparedStatement.setString(11, route.getTo().getName());
             preparedStatement.setDouble(12, route.getDistance());
             preparedStatement.setString(13, username);
-            preparedStatement.setString(14, username);
+            preparedStatement.setLong(14, route.getId());
+            preparedStatement.setString(15, username);
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
                 throw new NotFountId();

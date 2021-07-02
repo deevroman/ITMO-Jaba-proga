@@ -61,6 +61,7 @@ public class ExecuteScriptWindow extends JDialog implements LanguageSwitchble {
                 timeoutConnectionException.printStackTrace();
             }
             InformationWindow.getInstance().setAlert(outputOfCommand.toString());
+            this.setVisible(true);
             InformationWindow.getInstance().setVisible(true);
         });
 
