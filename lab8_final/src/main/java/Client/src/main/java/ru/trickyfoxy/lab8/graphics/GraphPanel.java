@@ -146,6 +146,7 @@ public class GraphPanel extends JPanel {
                         if (SwingUtilities.isLeftMouseButton(me)) {
                             InformationWindow.getInstance().setAlert(pair.getKey().printHTML());
                             InformationWindow.getInstance().setVisible(true);
+                            InformationWindow.getInstance().pack();
                         } else {
                             for (ActionListener al : update.getActionListeners()) {
                                 update.removeActionListener(al);

@@ -15,7 +15,6 @@ public class ClientApp {
     }
 
     public static void main(String[] args) {
-        MainWindow.getInstance().setVisible(true);
         LoginWindow.getInstance().setVisible(true);
     }
 }

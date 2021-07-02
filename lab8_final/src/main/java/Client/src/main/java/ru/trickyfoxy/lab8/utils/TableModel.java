@@ -81,7 +81,7 @@ public class TableModel extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         List<String> errors = new ArrayList<>();
         Route route = routes.get(rowIndex);
-        if (MainWindow.getUsername().equals(route.getCreator())) {
+        if (MainWindow.getInstance().getLogin().equals(route.getCreator())) {
             try {
                 switch (columnIndex) {
                     // 0 skip

@@ -75,7 +75,7 @@ public class ExecuteScriptWindow extends JDialog implements LanguageSwitchble {
 
     @Override
     public void refreshLanguage(Locale locale) {
-        ResourceBundle rb = ResourceBundle.getBundle("i18n/locale", locale);
+        ResourceBundle rb = ResourceBundle.getBundle("i18n/locales", locale);
         label.setText(rb.getString("pathScript"));
         execute.setText(rb.getString("execute"));
     }

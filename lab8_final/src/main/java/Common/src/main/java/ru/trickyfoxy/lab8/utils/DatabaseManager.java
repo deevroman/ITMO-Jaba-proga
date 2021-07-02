@@ -114,7 +114,8 @@ public class DatabaseManager {
 
     public Double getMaxByDistance(String username) throws SQLException {
         try (Connection connection = DriverManager.getConnection(this.uri, this.user, this.password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT max(distance) from users WHERE username = ?");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT max(distance) from collection WHERE username = ?");
+            preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getDouble(1);
@@ -126,7 +127,8 @@ public class DatabaseManager {
 
     public Double getMinByDistance(String username) throws SQLException {
         try (Connection connection = DriverManager.getConnection(this.uri, this.user, this.password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT min(distance) from users WHERE creator = ?");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT min(distance) from collection WHERE creator = ?");
+            preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getDouble(1);
@@ -184,7 +186,7 @@ public class DatabaseManager {
                 route.setName(resultSet.getString("name"));
                 route.setCoordinates(new Coordinates(resultSet.getFloat("coordinates_x"),
                         resultSet.getInt("coordinates_y")));
-                route.setCreationDate(resultSet.getDate("creationDate"));
+                route.setCreationDate(new java.util.Date(resultSet.getDate("creationDate").getTime()));
                 route.setFrom(new LocationFrom(resultSet.getInt("locationFrom_x"),
                         resultSet.getDouble("locationFrom_y"),
                         resultSet.getFloat("locationFrom_z"),

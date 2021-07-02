@@ -56,13 +56,13 @@ public class UpdateWindow extends JDialog implements LanguageSwitchble {
             List<String> errors = new ArrayList<>();
             try {
                 route = new Route(
-                        1L,
+                        elementId,
                         name.getText(),
                         new Coordinates(Float.parseFloat(coordinateX.getText()), Long.parseLong(coordinateY.getText())),
                         new Date(),
                         new LocationFrom(Integer.parseInt(fromX.getText()), Double.parseDouble(fromY.getText()), Float.parseFloat(fromZ.getText()), fromName.getText()),
                         new LocationTo(Integer.parseInt(toX.getText()), Integer.parseInt(toY.getText()), toName.getText()),
-                        Long.parseLong(distance.getText())
+                        Float.parseFloat(distance.getText())
                 );
             } catch (NumberFormatException exception) {
                 errors.add(LocaleMenu.getBundle().getString("wrongValues"));
@@ -118,6 +118,8 @@ public class UpdateWindow extends JDialog implements LanguageSwitchble {
         obligatoryFields.add(distanceLabel);
         obligatoryFields.add(distance);
 
+        date.setEnabled(false);
+
 
         Container container1 = new Container();
         container1.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -142,6 +144,7 @@ public class UpdateWindow extends JDialog implements LanguageSwitchble {
 
     public void setIdInput(String id) {
         this.idInput.setText(id);
+        this.elementId = Long.parseLong(id);
         for (Route route : MainWindow.getInstance().getTableModel().getRoutes()) {
             if (route.getId() == Long.parseLong(id)) {
                 idInput.setText(String.valueOf(route.getId()));
@@ -164,12 +167,10 @@ public class UpdateWindow extends JDialog implements LanguageSwitchble {
 
     public void disableStaticField() {
         idInput.setEnabled(false);
-        date.setEnabled(false);
     }
 
     public void enableStaticField() {
-        idInput.setEnabled(false);
-        date.setEnabled(false);
+        idInput.setEnabled(true);
     }
 
     @Override

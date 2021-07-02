@@ -298,7 +298,7 @@ public class Server {
                 if (event.cmd.getName().equals("getElements")) {
                     AnswerSender.sendAnswer(socketChannel, new ServerAnswer(storage.getListElements(), connect.session));
                 } else {
-                    Boolean[] updated = new Boolean[1];
+                    Boolean[] updated = new Boolean[]{Boolean.FALSE};
                     event.cmd.execute(new ReadWriteInterface(outputOfCommand), storage, sessionStorage.get(event.session).username, updated);
                     AnswerSender.sendAnswer(socketChannel, new ServerAnswer(outputOfCommand.toString(), connect.session));
                     if (updated[0]) {

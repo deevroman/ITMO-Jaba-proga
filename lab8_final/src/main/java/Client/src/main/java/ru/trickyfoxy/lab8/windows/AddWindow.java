@@ -1,5 +1,6 @@
 package ru.trickyfoxy.lab8.windows;
 
+import ru.trickyfoxy.lab8.exceptions.InvalidFieldException;
 import ru.trickyfoxy.lab8.utils.LanguageSwitchble;
 import ru.trickyfoxy.lab8.utils.UTF8Control;
 import ru.trickyfoxy.lab8.collection.Coordinates;
@@ -9,10 +10,12 @@ import ru.trickyfoxy.lab8.collection.Route;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.List;
 
-public class AddWindow extends JDialog  implements LanguageSwitchble {
+public class AddWindow extends JDialog implements LanguageSwitchble {
     private static volatile AddWindow instance;
 
     private final JButton addButton = new JButton(LocaleMenu.getBundle().getString("add"));
@@ -42,6 +45,93 @@ public class AddWindow extends JDialog  implements LanguageSwitchble {
     private final JLabel distanceLabel = new JLabel("Distance");
     private final JTextField distance = new JTextField("", 5);
 
+    private void validator() {
+        Boolean ok = true;
+        Route route = new Route();
+        route.setCoordinates(new Coordinates());
+        route.setFrom(new LocationFrom());
+        route.setTo(new LocationTo());
+        try {
+            route.getCoordinates().setX(Float.parseFloat(x.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            coordinateLabelX.setText("<html><font color='#ff0000'>Coordinate X</font></html>");
+            ok = false;
+        } finally {
+            coordinateLabelX.setText("Coordinate X");
+        }
+        try {
+            route.getCoordinates().setY(Long.parseLong(y.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            coordinateLabelY.setText("<html><font color='red'>Coordinate Y</font></html>");
+            ok = false;
+        } finally {
+            coordinateLabelY.setText("Coordinate Y");
+        }
+
+        try {
+            route.getFrom().setX(Integer.parseInt(fromX.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            fromLabelX.setText("<html><font color='red'>From X</font></html>");
+            ok = false;
+        } finally {
+            fromLabelX.setText("From X");
+        }
+        try {
+            route.getFrom().setY(Double.parseDouble(fromY.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            fromLabelY.setText("<html><font color='red'>From Y</font></html>");
+            ok = false;
+        } finally {
+            fromLabelY.setText("From Y");
+        }
+        try {
+            route.getFrom().setZ(Float.parseFloat(fromZ.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            fromLabelZ.setText("<html><font color='red'>From Z</font></html>");
+            ok = false;
+        } finally {
+            fromLabelZ.setText("From Z");
+        }
+
+        try {
+            route.getTo().setX(Integer.parseInt(toX.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            toLabelX.setText("<html><font color='red'>To X</font></html>");
+            ok = false;
+        } finally {
+            toLabelX.setText("To X");
+        }
+        try {
+            route.getTo().setY(Integer.parseInt(toY.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            toLabelY.setText("<html><font color='red'>To Y</font></html>");
+            ok = false;
+        } finally {
+            toLabelY.setText("To Y");
+        }
+        try {
+            route.setDistance(Float.parseFloat(distance.getText()));
+        } catch (InvalidFieldException | NumberFormatException e) {
+            distanceLabel.setText("<html><font color='red'>Distance</font></html>");
+            ok = false;
+        } finally {
+            distanceLabel.setText("Distance");
+        }
+
+//                new LocationFrom(Integer.parseInt(fromX.getText()), Double.parseDouble(fromY.getText()), Float.parseFloat(fromZ.getText()), fromName.getText()),
+//                new LocationTo(Integer.parseInt(toX.getText()), Integer.parseInt(toY.getText()), toName.getText()),
+//                Long.parseLong(distance.getText())
+
+        if (ok) {
+            addButton.setEnabled(true);
+            addIfMax.setEnabled(true);
+            addIfMin.setEnabled(true);
+        } else {
+            addButton.setEnabled(false);
+            addIfMax.setEnabled(false);
+            addIfMin.setEnabled(false);
+        }
+    }
 
     private void addCommand(MainWindow.AddingType type) {
         Route route = new Route();
@@ -59,9 +149,7 @@ public class AddWindow extends JDialog  implements LanguageSwitchble {
         } catch (NumberFormatException exception) {
             errors.add(LocaleMenu.getBundle().getString("wrongValues"));
         }
-//        if (Route.checkNull()) {
-//            errors.add(LocaleMenu.getBundle().getString("checkNull"));
-//        }
+        // todo
         if (!errors.isEmpty()) {
             InformationWindow.getInstance().setVisible(true);
             InformationWindow.getInstance().setAlert("<html>" + String.join("<br>", errors) + "</html>");
@@ -83,6 +171,34 @@ public class AddWindow extends JDialog  implements LanguageSwitchble {
         addButton.addActionListener(e -> addCommand(MainWindow.AddingType.ADD));
         addIfMin.addActionListener(e -> addCommand(MainWindow.AddingType.ADD_IF_MIN));
         addIfMax.addActionListener(e -> addCommand(MainWindow.AddingType.ADD_IF_MAX));
+
+        KeyListener validatorClass = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                validator();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                validator();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                validator();
+            }
+        };
+        name.addKeyListener(validatorClass);
+        x.addKeyListener(validatorClass);
+        y.addKeyListener(validatorClass);
+        fromX.addKeyListener(validatorClass);
+        fromY.addKeyListener(validatorClass);
+        fromZ.addKeyListener(validatorClass);
+        fromName.addKeyListener(validatorClass);
+        toX.addKeyListener(validatorClass);
+        toY.addKeyListener(validatorClass);
+        fromName.addKeyListener(validatorClass);
+        distance.addKeyListener(validatorClass);
 
         Container main = this.getContentPane();
         main.setLayout(new BorderLayout());

@@ -64,7 +64,7 @@ public class RemoveByIdWindow extends JDialog implements LanguageSwitchble {
     }
 
     public void refreshLanguage(Locale locale) {
-        ResourceBundle rb = ResourceBundle.getBundle("i18n/locale", locale);
+        ResourceBundle rb = ResourceBundle.getBundle("i18n/locales", locale);
         remove.setText(rb.getString("remove"));
     }
 }

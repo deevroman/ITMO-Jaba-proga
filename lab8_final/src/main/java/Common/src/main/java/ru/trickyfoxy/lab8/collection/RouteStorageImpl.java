@@ -61,7 +61,7 @@ public class RouteStorageImpl implements RouteStorage {
         return storage;
     }
 
-    public ArrayList<Route> getListElements(){
+    public ArrayList<Route> getListElements() {
         return new ArrayList<>(storage);
     }
 
@@ -136,10 +136,14 @@ public class RouteStorageImpl implements RouteStorage {
 
     @Override
     synchronized public void clear(String username) {
+        List<Route> forDeleting = new ArrayList<>();
         for (Route cur : storage) {
             if (cur.getCreator().equals(username)) {
-                removeById(cur.getId());
+                forDeleting.add(cur);
             }
+        }
+        for (Route cur : forDeleting) {
+            removeById(cur.getId());
         }
     }
 
@@ -150,10 +154,14 @@ public class RouteStorageImpl implements RouteStorage {
 
     @Override
     synchronized public void removeGreater(Route key, String username) {
-        while (storage.size() > 0 && storage.last().getDistance() > key.getDistance()) {
-            if(storage.last().getCreator().equals(username)) {
-                removeById(storage.last().getId());
+        List<Route> forDeleting = new ArrayList<>();
+        for (Route cur : storage) {
+            if (cur.getCreator().equals(username) && cur.getDistance() > key.getDistance()) {
+                forDeleting.add(cur);
             }
+        }
+        for (Route cur : forDeleting) {
+            removeById(cur.getId());
         }
     }
 

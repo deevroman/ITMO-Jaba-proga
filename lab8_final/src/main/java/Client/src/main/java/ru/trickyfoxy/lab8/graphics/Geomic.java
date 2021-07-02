@@ -12,18 +12,25 @@ public class Geomic {
             y1 = y2;
             y2 = tmp;
         }
-        // TODO переписать через расстояние до отрезка
+
         double A = y1 - y2;
         double B = x2 - x1;
         double C = x1 * y2 - x2 * y1;
 
-        if (Math.abs(A * x3 + B * y3 + C) <= 2500) {
-            if (y1 < y2) {
-                return x1 <= x3 && x3 <= x2 && y1 <= y3 && y3 <= y2;
-            } else {
-                return x1 <= x3 && x3 <= x2 && y2 <= y3 && y3 <= y1;
-            }
-        }
-        return false;
+        double dist = Math.abs(A*x3+B*y3+C)/Math.sqrt(A*A+B*B);
+
+        double dist2 = Math.sqrt((x1-x3)*(x1-x3)+(y1-y3)*(y1-y3));
+        double dist3 = Math.sqrt((x2-x3)*(x2-x3)+(y2-y3)*(y2-y3));
+
+        return Math.min(dist, Math.min(dist2, dist3)) < 10;
+
+//        if (Math.abs(A * x3 + B * y3 + C) <= 2500) {
+//            if (y1 < y2) {
+//                return x1 <= x3 && x3 <= x2 && y1 <= y3 && y3 <= y2;
+//            } else {
+//                return x1 <= x3 && x3 <= x2 && y2 <= y3 && y3 <= y1;
+//            }
+//        }
+//        return false;
     }
 }

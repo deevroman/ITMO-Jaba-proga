@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 public class MainWindow extends JFrame implements LanguageSwitchble {
     private static MainWindow instance;
 
-    public static JLabel getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
     private static JLabel username;
@@ -48,6 +48,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
     private final JButton info;
     private final JButton removeById;
     private final JButton removeByDistance;
+    private final JButton countGreaterThanDistanceButton;
     private final JButton updateId;
     private final JButton show;
     private final JLabel logTextPane;
@@ -379,6 +380,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         info = new JButton(rb.getString("info"));
         removeById = new JButton(rb.getString("remove_by_id"));
         removeByDistance = new JButton(rb.getString("remove_greater"));
+        countGreaterThanDistanceButton = new JButton(rb.getString("countGreaterThanDistanceButton"));
         updateId = new JButton(rb.getString("update_id"));
         show = new JButton(rb.getString("show"));
 
@@ -392,6 +394,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         buttons.add(info);
         buttons.add(removeById);
         buttons.add(removeByDistance);
+        buttons.add(countGreaterThanDistanceButton);
         buttons.add(updateId);
         buttons.add(show);
         buttons.add(logTextPane);
@@ -442,6 +445,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         executeScript.addActionListener(e -> ExecuteScriptWindow.getInstance().setVisible(true));
         removeById.addActionListener(e -> RemoveByIdWindow.getInstance().setVisible(true));
         removeByDistance.addActionListener(e -> RemoveByDistanceWindow.getInstance().setVisible(true));
+        countGreaterThanDistanceButton.addActionListener(e -> CountGreaterThanDistanceWindow.getInstance().setVisible(true));
 
         table.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
@@ -581,9 +585,15 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
 
     public void setLogin(String login, String pass) {
         log("Вы успешно зашли");
-        username.setText(login);
+        Color color = new Color(login.hashCode() * login.hashCode() * login.hashCode());
+        String hex = Integer.toHexString(color.getRGB() & 0xffffff);
+        if (hex.length() < 6) {
+            hex = "0" + hex;
+        }
+        hex = "#" + hex;
+        username.setText("<html>" + login + " <font color='" + hex + "'>■</font>" + "</html>");
         this.login = login;
-        this.login = pass;
+        this.pass = pass;
     }
 
     public void refreshElements() {
@@ -725,6 +735,25 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
                 InformationWindow.getInstance().setAlert("<html>" + LocaleMenu.getBundle().getString("dateOfCreation") + split[0] + "<br>"
                         + LocaleMenu.getBundle().getString("sizeOfStorage") + split[1] + "<br>"
                         + LocaleMenu.getBundle().getString("typeOfCollection") + split[2] + "</html>");
+                InformationWindow.getInstance().setVisible(true);
+            } else {
+                log(answer.message);
+            }
+        } catch (IOException | TimeoutConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getCountGreaterThanDistance(Float distance){
+        log("");
+        Command cmd = new CountGreaterThanDistance();
+        cmd.setArgument(String.valueOf(distance));
+        try {
+            Client.getInstance().connector.reconnect();
+            Client.getInstance().connector.sendCommand(cmd);
+            ServerAnswer answer = (ServerAnswer) Client.getInstance().connector.receiver();
+            if (answer.status == ServerAnswerStatus.OK) {
+                InformationWindow.getInstance().setAlert("<html>" + LocaleMenu.getBundle().getString("countGreaterThanDistance") + answer.message + "</html>");
                 InformationWindow.getInstance().setVisible(true);
             } else {
                 log(answer.message);

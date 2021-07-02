@@ -20,9 +20,11 @@ public class AddIfMax extends Command {
     @Override
     public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws IOException, SQLException {
         route.validate();
-        Double mx = routeStorage.getDatabaseManager().getMaxByDistance(username);
         route.setCreator(username);
-        if (mx < route.getDistance() && routeStorage.add_if_max(route)) {
+        Double mx = routeStorage.getDatabaseManager().getMaxByDistance(username);
+        if (mx < route.getDistance()) {
+            routeStorage.getDatabaseManager().insertToDB(route, username);
+            routeStorage.add_if_max(route);
             updated[0] = Boolean.TRUE;
             readWriteInterface.writeln("Элемент добавлен");
         } else {

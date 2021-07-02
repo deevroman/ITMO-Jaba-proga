@@ -23,6 +23,7 @@ public class Update extends Command {
     @Override
     public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage, String username, Boolean[] updated) throws NotFountId, IOException, NoUniqueId, SQLException {
         route.validate();
+        route.setCreator(username);
         Long id = Long.parseLong(argument);
         routeStorage.getDatabaseManager().updateById(id, route, username);
         routeStorage.update(id, route);

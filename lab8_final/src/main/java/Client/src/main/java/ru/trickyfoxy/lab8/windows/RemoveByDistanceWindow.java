@@ -15,15 +15,12 @@ public class RemoveByDistanceWindow extends JDialog implements LanguageSwitchble
     private JTextField distanceField = new JTextField("", 5);
     private JButton remove = new JButton(LocaleMenu.getBundle().getString("remove"));
 
-    private enum RemoveType {
-        BY_DISTANCE,
-        GREATER_DISTANCE
-    }
 
-    private RemoveType[] types = new RemoveType[]{RemoveType.BY_DISTANCE, RemoveType.GREATER_DISTANCE};
-    private JComboBox<RemoveType> removeTypes = new JComboBox<>(types);
+    private String[] types = new String[]{LocaleMenu.getBundle().getString("byDistance"), LocaleMenu.getBundle().getString("greaterDistance")};
+    private JComboBox<String> removeTypes;
 
     private RemoveByDistanceWindow() {
+        removeTypes = new JComboBox<>(types);
         this.setBounds(300, 400, 197, 113);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -88,7 +85,7 @@ public class RemoveByDistanceWindow extends JDialog implements LanguageSwitchble
     }
 
     public void refreshLanguage(Locale locale) {
-        ResourceBundle rb = ResourceBundle.getBundle("i18n/locale", locale);
+        ResourceBundle rb = ResourceBundle.getBundle("i18n/locales", locale);
         remove.setText(rb.getString("remove"));
     }
 }
