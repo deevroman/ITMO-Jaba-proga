@@ -13,5 +13,8 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
+          cache: maven
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify lab8_final
+        run: |
+          cd lab8_final
+          mvn --batch-mode --update-snapshots verify
