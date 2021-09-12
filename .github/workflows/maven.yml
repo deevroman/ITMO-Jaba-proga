@@ -45,5 +45,5 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            lab8_final/staging/lab8-client-jar-with-dependencies.jar
-            lab8_final/staging/lab8-server-jar-with-dependencies.jar
+            lab8-client-jar-with-dependencies.jar
+            lab8-server-jar-with-dependencies.jar
