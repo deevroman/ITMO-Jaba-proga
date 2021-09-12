@@ -18,7 +18,9 @@ jobs:
         run: |
           cd lab8_final
           mvn --batch-mode --update-snapshots verify
-          mkdir staging && cp target/*.jar staging
+          mkdir staging
+          cp src/main/java/Client/target/lab8-client-jar-with-dependencies.jar staging
+          cp src/main/java/Server/target/lab8-server-jar-with-dependencies.jar staging
       - uses: actions/upload-artifact@v2
         with:
           name: Package
