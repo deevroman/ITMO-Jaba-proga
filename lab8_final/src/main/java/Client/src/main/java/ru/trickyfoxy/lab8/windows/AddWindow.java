@@ -118,10 +118,6 @@ public class AddWindow extends JDialog implements LanguageSwitchble {
             distanceLabel.setText("Distance");
         }
 
-//                new LocationFrom(Integer.parseInt(fromX.getText()), Double.parseDouble(fromY.getText()), Float.parseFloat(fromZ.getText()), fromName.getText()),
-//                new LocationTo(Integer.parseInt(toX.getText()), Integer.parseInt(toY.getText()), toName.getText()),
-//                Long.parseLong(distance.getText())
-
         if (ok) {
             addButton.setEnabled(true);
             addIfMax.setEnabled(true);

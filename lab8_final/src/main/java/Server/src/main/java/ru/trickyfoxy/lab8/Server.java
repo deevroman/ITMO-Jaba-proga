@@ -24,8 +24,8 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeoutException;
 
 public class Server {
-    private static int PORT = 1343;
-    private static final int TIMEOUT = 500000;
+    private int PORT = 1343;
+    private final int TIMEOUT = 100000;
 
     public class ChannelForNotification {
         SocketChannel socketChannel;
@@ -56,7 +56,7 @@ public class Server {
         logger.setLevel(Level.INFO);
 
         try {
-            databaseManager = new DatabaseManager(db_config.uri, db_config.user, db_config.password);
+            databaseManager = new DatabaseManager(DatabaseConfig.URI, DatabaseConfig.USER, DatabaseConfig.PASSWORD);
             storage.setDatabaseManager(databaseManager);
             storage.pullRoutesFromDB();
         } catch (SQLException throwables) {
@@ -73,7 +73,7 @@ public class Server {
                     break;
                 } catch (BindException e) {
                     PORT++;
-                    if(PORT > 1400){
+                    if (PORT > 1400) {
                         logger.error("Не удаётся занять порты");
                         return;
                     }
@@ -120,6 +120,7 @@ public class Server {
                 try {
                     event = EventReceiver.getEvent(socketChannel, connect, timeout);
                     try {
+                        // Сделано для долгих запросы, чтобы их постоянная проверка не создавала нагрузку
                         sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -135,6 +136,9 @@ public class Server {
                 }
                 if (event != null) {
                     commonPool.execute(new HandleEvent(event, new Connect(), socketChannel));
+                    if (event.onetimeQuery) {
+                        break;
+                    }
                     event = null;
                 }
             }
@@ -158,7 +162,7 @@ public class Server {
                             channel.session,
                             ServerAnswerStatus.NOTIFICATION,
                             storage.getListElements()));
-                    sessionStorage.get(channel.session).expireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
+                    sessionStorage.get(channel.session).sessionExpireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
                 } catch (IOException e) {
                     logger.warn("Не удалось отправить");
                 }
@@ -172,12 +176,12 @@ public class Server {
 
     private boolean checkSession(String session, Connect connect) throws InvalidLoginException, InvalidTokenExpiredException {
         if (sessionStorage.get(session) != null
-                && sessionStorage.get(session).expireTime > System.currentTimeMillis()) {
-            connect.expireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
+                && sessionStorage.get(session).sessionExpireTime > System.currentTimeMillis()) {
+            connect.sessionExpireTime = System.currentTimeMillis() + Connect.timeOfSessionLife;
             return true;
         } else if (sessionStorage.get(session) == null) {
             throw new InvalidLoginException("Invalid token");
-        } else if (sessionStorage.get(session).expireTime > System.currentTimeMillis()) {
+        } else if (sessionStorage.get(session).sessionExpireTime > System.currentTimeMillis()) {
             throw new InvalidTokenExpiredException("Token expired");
         }
         return false;
@@ -281,7 +285,7 @@ public class Server {
             socketChannel.finishConnect();
         }
 
-        void commandEventHandler() throws IOException {
+        private void commandEventHandler() throws IOException {
             try {
                 checkSession(event.session, connect);
             } catch (InvalidLoginException e) {

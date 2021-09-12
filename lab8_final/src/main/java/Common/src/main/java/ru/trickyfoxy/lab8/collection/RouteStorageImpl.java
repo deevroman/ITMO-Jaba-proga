@@ -97,11 +97,9 @@ public class RouteStorageImpl implements RouteStorage {
 
     @Override
     synchronized public String info() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Время инциализации коллекции: ").append(creationDate).append("\n");
-        sb.append("Количество элементов в коллекции: ").append(storage.size()).append("\n");
-        sb.append("Тип коллекции: ").append(storage.getClass().getName());
-        return sb.toString();
+        return "Время инциализации коллекции: " + creationDate + "\n" +
+                "Количество элементов в коллекции: " + storage.size() + "\n" +
+                "Тип коллекции: " + storage.getClass().getName();
     }
 
     @Override

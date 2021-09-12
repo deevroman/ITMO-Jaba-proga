@@ -142,6 +142,6 @@ public class TableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return !(columnIndex == 0 | columnIndex == 4 | columnIndex == 13);
+        return !(columnIndex == 0 || columnIndex == 4 || columnIndex == 13);
     }
 }

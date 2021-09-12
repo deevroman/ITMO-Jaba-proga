@@ -33,7 +33,7 @@ public class EventReceiver {
         connect.byteArray = resultBytes;
         byteBuffer.clear();
         try {
-            response = Serialization.DeserializeObject(resultBytes);
+            response = Serialization.deserializeObject(resultBytes);
             connect.byteArray = new byte[0];
             return response;
         } catch (IOException | ClassNotFoundException | ClassCastException e) {

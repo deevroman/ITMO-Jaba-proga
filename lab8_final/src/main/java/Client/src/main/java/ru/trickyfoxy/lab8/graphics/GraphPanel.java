@@ -20,7 +20,6 @@ import static ru.trickyfoxy.lab8.graphics.Geomic.pointInSegment;
 
 public class GraphPanel extends JPanel {
 
-//    private Image img = null;
     private final Timer timer = new Timer(10, arg0 -> repaint());
     private final int padding = 25;
     private final int labelPadding = 25;
@@ -31,8 +30,8 @@ public class GraphPanel extends JPanel {
     private final JPopupMenu menu;
     private final JMenuItem remove;
     private final JMenuItem update;
-    Map<String, Color> colors;
-    Map<Route, Shapes> lines;
+    private Map<String, Color> colors;
+    private Map<Route, Shapes> lines;
 
     public void paintWithAnimation() {
         this.painting = true;
@@ -42,12 +41,6 @@ public class GraphPanel extends JPanel {
     private boolean painting = false;
 
     public GraphPanel() {
-//        try {
-//            ClassLoader classLoader = getClass().getClassLoader();
-//            img = ImageIO.read(classLoader.getResource("light.png"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         menu = new JPopupMenu();
         update = new JMenuItem(LocaleMenu.getBundle().getString("update"));
         remove = new JMenuItem(LocaleMenu.getBundle().getString("remove"));
@@ -77,7 +70,7 @@ public class GraphPanel extends JPanel {
             int x1 = pointWidth + padding + labelPadding;
             int y0 = getHeight() - ((i * (getHeight() - padding * 2 - labelPadding)) / numberDivisions + padding + labelPadding);
             int y1 = y0;
-            if (routes.size() > 0) {
+            if (routes.isEmpty()) {
                 g2.setColor(gridColor);
                 g2.drawLine(padding + labelPadding + 1 + pointWidth, y0, getWidth() - padding, y1);
                 g2.setColor(Color.BLACK);
@@ -95,7 +88,7 @@ public class GraphPanel extends JPanel {
             int x1 = x0;
             int y0 = getHeight() - padding - labelPadding;
             int y1 = y0 - pointWidth;
-            if ((i % ((int) ((numberDivisions / 20.0)) + 1)) == 0) {
+            if (i % ((int) ((numberDivisions / 20.0)) + 1) == 0) {
                 g2.setColor(gridColor);
                 g2.drawLine(x0, getHeight() - padding - labelPadding - 1 - pointWidth, x1, padding);
                 g2.setColor(Color.BLACK);
@@ -122,7 +115,7 @@ public class GraphPanel extends JPanel {
 
                 String user = route.getCreator();
                 if (!colors.containsKey(user)) {
-                    colors.put(user, new Color(user.hashCode()*user.hashCode()*user.hashCode()));
+                    colors.put(user, new Color(user.hashCode() * user.hashCode() * user.hashCode()));
                 }
                 g2.setColor(colors.get(user));
 
@@ -137,39 +130,40 @@ public class GraphPanel extends JPanel {
             public void mouseClicked(MouseEvent me) {
                 super.mouseClicked(me);
                 for (Map.Entry<Route, Shapes> pair : lines.entrySet()) {
-                    if (pointInSegment(pair.getValue().getCenterX(),
+                    if (!pointInSegment(pair.getValue().getCenterX(),
                             pair.getValue().getCenterY(),
                             pair.getValue().getCenterX2(),
                             pair.getValue().getCenterY2(),
                             me.getPoint().x,
                             me.getPoint().y)) {
-                        if (SwingUtilities.isLeftMouseButton(me)) {
-                            InformationWindow.getInstance().setAlert(pair.getKey().printHTML());
-                            InformationWindow.getInstance().setVisible(true);
-                            InformationWindow.getInstance().pack();
-                        } else {
-                            for (ActionListener al : update.getActionListeners()) {
-                                update.removeActionListener(al);
+                        continue;
+                    }
+                    if (SwingUtilities.isLeftMouseButton(me)) {
+                        InformationWindow.getInstance().setAlert(pair.getKey().printHTML());
+                        InformationWindow.getInstance().setVisible(true);
+                        InformationWindow.getInstance().pack();
+                    } else {
+                        for (ActionListener al : update.getActionListeners()) {
+                            update.removeActionListener(al);
+                        }
+                        for (ActionListener al : remove.getActionListeners()) {
+                            remove.removeActionListener(al);
+                        }
+                        update.addActionListener(e -> {
+                            UpdateWindow.getInstance().setIdInput(String.valueOf(pair.getKey().getId()));
+                            UpdateWindow.getInstance().disableStaticField();
+                            UpdateWindow.getInstance().setVisible(true);
+                        });
+                        remove.addActionListener(e -> {
+                            if (MainWindow.getInstance().removeElement(pair.getKey().getId(), MainWindow.RemovingType.REMOVE)) {
+                                MainWindow.getInstance().refreshElements();
+                            } else {
+                                InformationWindow.getInstance().setAlert(LocaleMenu.getBundle().getString("notDeleted"));
+                                InformationWindow.getInstance().setVisible(true);
                             }
-                            for (ActionListener al : remove.getActionListeners()) {
-                                remove.removeActionListener(al);
-                            }
-                            update.addActionListener(e -> {
-                                UpdateWindow.getInstance().setIdInput(String.valueOf(pair.getKey().getId()));
-                                UpdateWindow.getInstance().disableStaticField();
-                                UpdateWindow.getInstance().setVisible(true);
-                            });
-                            remove.addActionListener(e -> {
-                                if (MainWindow.getInstance().removeElement(pair.getKey().getId(), MainWindow.RemovingType.REMOVE)) {
-                                    MainWindow.getInstance().refreshElements();
-                                } else {
-                                    InformationWindow.getInstance().setAlert(LocaleMenu.getBundle().getString("notDeleted"));
-                                    InformationWindow.getInstance().setVisible(true);
-                                }
-                            });
-                            if (!menu.isVisible()) {
-                                menu.show(me.getComponent(), me.getX(), me.getY());
-                            }
+                        });
+                        if (!menu.isVisible()) {
+                            menu.show(me.getComponent(), me.getX(), me.getY());
                         }
                     }
                 }
@@ -180,43 +174,6 @@ public class GraphPanel extends JPanel {
     public void startAnimation(Graphics2D g2) {
         painting = true;
         timer.start();
-//        double mx = sqrt(getWidth() * getWidth() + getHeight() * getHeight());
-//        if (scaleTicks == 0) {
-//            backgroundColor = Color.DARK_GRAY;
-//        }
-//        if (scaleTicks < getWidth() /*!backgroundColor.equals(Color.WHITE)*/) {
-//            g2.drawImage(
-//                    img.getScaledInstance((int) max(img.getWidth(null) - scaleTicks * 50.0, 1),
-//                            (int) max(img.getHeight(null) - scaleTicks * 50.0, 1),
-//                            Image.SCALE_FAST),
-//                    x, 60 + scaleTicks * 5, null);
-//            double width = mx - scaleTicks;
-//            (new PointShape(g2, -width, (float) max((mx - width - padding), 0), (int) width)).process();
-//            backgroundColor = new Color(min(backgroundColor.getRed() + 1, 255),
-//                    min(backgroundColor.getGreen() + 1, 255),
-//                    min(backgroundColor.getBlue() + 1, 255),
-//                    backgroundColor.getAlpha());
-//            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-//            int w = getWidth();
-//            int h = getHeight();
-//
-//            int x_padding = padding + labelPadding;
-//            int y_padding = padding;
-//
-//            w -= x_padding + 2 * padding;
-//            h -= y_padding + labelPadding + padding;
-//
-//            Color color1 = new Color(200, 200, 200, 200);
-//            Color color2 = backgroundColor;
-//            GradientPaint gp = new GradientPaint(x_padding + scaleTicks, y_padding, color1, x_padding + w, 0, color2);
-//            g2.setPaint(gp);
-//            g2.fillRect(x_padding + scaleTicks, y_padding, w, h);
-//
-//            gp = new GradientPaint(x_padding, y_padding, color2, x_padding + scaleTicks, y_padding, color1);
-//            g2.setPaint(gp);
-//            g2.fillRect(x_padding, y_padding, scaleTicks, h);
-//            scaleTicks += 30;
 
         double mx = 1000;
         if (scaleTicks > mx) {
@@ -236,9 +193,7 @@ public class GraphPanel extends JPanel {
 
 
             String user = route.getCreator();
-            if (!colors.containsKey(user)) {
-                colors.put(user, new Color(user.hashCode()*user.hashCode()*user.hashCode()));
-            }
+            colors.putIfAbsent(user, new Color(user.hashCode() * user.hashCode() * user.hashCode()));
             g2.setColor(colors.get(user));
 
             x2 = x1 + (x2 - x1) * scaleTicks / mx;

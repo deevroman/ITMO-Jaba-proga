@@ -10,23 +10,35 @@ public class Event implements Serializable {
     public String pass = null;
     public String session = null;
 
+    public boolean onetimeQuery = false;
+
     public EventType eventType = null;
 
     public Event(Command cmd, EventType eventType, String session) {
         this.cmd = cmd;
         this.eventType = eventType;
         this.session = session;
+        this.onetimeQuery = true;
+    }
+
+    public Event(Command cmd, EventType eventType, String session, boolean onetimeQuery) {
+        this.cmd = cmd;
+        this.eventType = eventType;
+        this.session = session;
+        this.onetimeQuery = onetimeQuery;
     }
 
     public Event(Command cmd, EventType eventType) {
         this.cmd = cmd;
         this.eventType = eventType;
+        this.onetimeQuery = true;
     }
 
     public Event(String login, String pass, EventType eventType) {
         this.login = login;
         this.pass = pass;
         this.eventType = eventType;
+        this.onetimeQuery = true;
     }
 
     public Event(EventType eventType) {

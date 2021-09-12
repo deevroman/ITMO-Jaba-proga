@@ -9,7 +9,6 @@ public class LineShape implements Shapes {
     double y1 = 0;
     double x2 = 0;
     double y2 = 0;
-//    int pointWidth = 4;
 
     protected LineShape() {
     }
@@ -24,14 +23,9 @@ public class LineShape implements Shapes {
 
     @Override
     public Shapes process() {
-//        double ovalW = pointWidth;
-//        double ovalH = pointWidth;
-//        Ellipse2D point = new Ellipse2D.Double(this.x1, this.y1, ovalW * 2, ovalH * 2);
-//        g2D.fill(point);
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2D.setStroke(new BasicStroke(5));
         g2D.draw(new Line2D.Float((float) x1, (float) y1, (float) x2, (float) y2));
-//        g2D.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
 
         return this;
     }

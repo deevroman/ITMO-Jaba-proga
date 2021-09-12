@@ -23,6 +23,5 @@ public class Info extends Command {
                 routeStorage.getCollectionClass().getName();
         readWriteInterface.writeln(sb);
         return null;
-        // TODO IDEA bug? Rename bad val broke name
     }
 }

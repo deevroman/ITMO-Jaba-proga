@@ -14,7 +14,7 @@ public class Info extends Command {
 
     @Override
     public String execute(ReadWriteInterface readWriteInterface, RouteStorage routeStorage) throws IOException {
-        String sb = "Дата инциализации коллекции: " + new SimpleDateFormat("yyyy-MM-dd").format(routeStorage.getCreationDate()) + "\n" +
+        String sb = "Дата инициализации коллекции: " + new SimpleDateFormat("yyyy-MM-dd").format(routeStorage.getCreationDate()) + "\n" +
                 "Количество элементов в коллекции: " + routeStorage.size() + "\n" +
                 "Тип коллекции: " + routeStorage.getCollectionClass().getName();
         readWriteInterface.writeln(sb);

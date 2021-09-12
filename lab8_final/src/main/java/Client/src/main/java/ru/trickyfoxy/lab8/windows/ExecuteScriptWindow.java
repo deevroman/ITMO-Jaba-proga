@@ -1,7 +1,7 @@
 package ru.trickyfoxy.lab8.windows;
 
 
-import ru.trickyfoxy.lab8.Client;
+import ru.trickyfoxy.lab8.Client.Client;
 import ru.trickyfoxy.lab8.commands.CommandsManager;
 import ru.trickyfoxy.lab8.exceptions.TimeoutConnectionException;
 import ru.trickyfoxy.lab8.utils.LanguageSwitchble;

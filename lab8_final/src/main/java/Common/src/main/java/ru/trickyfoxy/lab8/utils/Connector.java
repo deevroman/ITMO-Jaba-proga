@@ -48,14 +48,14 @@ public class Connector {
     }
 
     public void reconnect() throws IOException {
-        if(connected) {
+        if (connected) {
             disconnect();
         }
         connect();
     }
 
     public void connect() throws IOException {
-        if(connected){
+        if (connected) {
             return;
         }
         outcoming = new Socket();
@@ -75,14 +75,14 @@ public class Connector {
         connected = false;
     }
 
-    public void sendEvent( Event event) throws IOException {
+    public void sendEvent(Event event) throws IOException {
         System.out.println("Отправлено: " + event);
         event.session = session;
         toServer.writeObject(event);
     }
 
-    public void sendCommand( Command cmd) throws IOException {
-        toServer.writeObject(new Event(cmd, EventType.COMMAND, session));
+    public void sendCommand(Command cmd) throws IOException {
+        toServer.writeObject(new Event(cmd, EventType.COMMAND, session, true));
         toServer.flush();
     }
 
@@ -92,6 +92,8 @@ public class Connector {
         int numberOfBytesRead = 1;
         byte[] resultBytes = new byte[0];
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        // получение в финальной версии сделано по сути блокирующим,
+        // а именно ответ будет считываться пока корректно не считается или не истечёт время
         while (true) {
             if ((double) (System.currentTimeMillis() - m) > timeout) {
                 throw new TimeoutConnectionException();
@@ -106,7 +108,7 @@ public class Connector {
             resultBytes = tempBytes;
             byteBuffer.clear();
             try {
-                return Serialization.DeserializeObject(resultBytes);
+                return Serialization.deserializeObject(resultBytes);
             } catch (ClassCastException | ClassNotFoundException e) {
                 continue;
             }

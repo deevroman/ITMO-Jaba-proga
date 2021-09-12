@@ -18,9 +18,7 @@ public class InformationWindow extends JDialog {
         Container container = this.getContentPane();
         container.setLayout(borderLayout);
 
-        ok.addActionListener(e -> {
-            this.setVisible(false);
-        });
+        ok.addActionListener(e -> this.setVisible(false));
 
         Container container1 = new Container();
         container1.setLayout(new FlowLayout(FlowLayout.RIGHT));

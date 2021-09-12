@@ -1,5 +1,8 @@
 package ru.trickyfoxy.lab8.graphics;
 
+/**
+ * Класс с методами для геометрических вычислений
+ */
 public class Geomic {
     public static boolean pointInSegment(double x1, double y1, double x2, double y2, double x3, double y3) {
         double tmp;
@@ -24,13 +27,5 @@ public class Geomic {
 
         return Math.min(dist, Math.min(dist2, dist3)) < 10;
 
-//        if (Math.abs(A * x3 + B * y3 + C) <= 2500) {
-//            if (y1 < y2) {
-//                return x1 <= x3 && x3 <= x2 && y1 <= y3 && y3 <= y2;
-//            } else {
-//                return x1 <= x3 && x3 <= x2 && y2 <= y3 && y3 <= y1;
-//            }
-//        }
-//        return false;
     }
 }

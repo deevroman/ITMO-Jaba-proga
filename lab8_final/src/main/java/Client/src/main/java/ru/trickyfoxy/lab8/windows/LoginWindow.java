@@ -1,6 +1,6 @@
 package ru.trickyfoxy.lab8.windows;
 
-import ru.trickyfoxy.lab8.Client;
+import ru.trickyfoxy.lab8.Client.Client;
 import ru.trickyfoxy.lab8.utils.LanguageSwitchble;
 import ru.trickyfoxy.lab8.utils.UTF8Control;
 
@@ -31,8 +31,16 @@ public class LoginWindow extends JFrame implements LanguageSwitchble {
     private final JTextField loginInput = new JTextField("kek", 5);
     private final JTextField passwordInput = new JTextField("lol", 5);
 
+    public static void centreWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
+    }
+
     private LoginWindow() {
-        this.setBounds(300, 400, 350, 180);
+        this.setSize(350, 180);
+        centreWindow(this);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         signInButton.addActionListener(e -> {
             try {

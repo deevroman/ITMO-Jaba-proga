@@ -1,6 +1,6 @@
 package ru.trickyfoxy.lab8.windows;
 
-import ru.trickyfoxy.lab8.Client;
+import ru.trickyfoxy.lab8.Client.Client;
 import ru.trickyfoxy.lab8.utils.TableModel;
 import ru.trickyfoxy.lab8.collection.Route;
 import ru.trickyfoxy.lab8.commands.*;
@@ -54,21 +54,27 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
     private final JLabel logTextPane;
     private final GraphPanel graphPanel;
 
+    enum SortDirection {
+        UP,
+        DOWN;
+    }
 
-    private Boolean boolId = false;
-    private Boolean boolName = false;
-    private Boolean boolX = false;
-    private Boolean boolY = false;
-    private Boolean boolDate = false;
-    private Boolean fromX = false;
-    private Boolean fromY = false;
-    private Boolean fromZ = false;
-    private Boolean fromName = false;
-    private Boolean toX = false;
-    private Boolean toY = false;
-    private Boolean toName = false;
-    private Boolean boolDistance = false;
-    private Boolean boolCreator = false;
+    static class SortedBy {
+        public static String columnName;
+        public static SortDirection direction;
+
+        public static void reverse() {
+            if (direction == SortDirection.UP) direction = SortDirection.DOWN;
+            else direction = SortDirection.UP;
+        }
+
+        public static void setColumnName(String name){
+            if (!name.equals(SortedBy.columnName)) {
+                SortedBy.columnName = name;
+                SortedBy.direction = SortDirection.UP;
+            }
+        }
+    }
 
     private String login;
     private String pass;
@@ -429,11 +435,10 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         clear.addActionListener(e -> {
             if (MainWindow.getInstance().clearElements()) {
                 InformationWindow.getInstance().setAlert(LocaleMenu.getBundle().getString("cleared"));
-                InformationWindow.getInstance().setVisible(true);
             } else {
                 InformationWindow.getInstance().setAlert(LocaleMenu.getBundle().getString("cannot"));
-                InformationWindow.getInstance().setVisible(true);
             }
+            InformationWindow.getInstance().setVisible(true);
         });
         info.addActionListener(e -> getInfoAboutCollection());
         updateId.addActionListener(e -> UpdateWindow.getInstance().setVisible(true));
@@ -452,107 +457,116 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
             public void mouseClicked(MouseEvent e) {
                 int col = table.columnAtPoint(e.getPoint());
                 String name = table.getColumnName(col);
-                ArrayList<Route> routes = new ArrayList<>();
+                final char upTriangle = '▲';
+                final char downTriangle = '▼';
+                if (name.lastIndexOf(0) == upTriangle || name.lastIndexOf(0) == downTriangle) {
+                    name = name.substring(0, name.length() - 1);
+                }
+
+                SortedBy.setColumnName(name);
+                SortedBy.reverse();
+                for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+                    String curColumnName = (String) table.getColumnModel().getColumn(i).getHeaderValue();
+                    if (curColumnName.charAt(curColumnName.length() - 1) == upTriangle ||
+                            curColumnName.charAt(curColumnName.length() - 1) == downTriangle) {
+                        table.getColumnModel().getColumn(i).setHeaderValue(curColumnName.substring(0, curColumnName.length() - 1));
+                    }
+                }
+                if (SortedBy.direction == SortDirection.UP) {
+                    table.getColumnModel().getColumn(col).setHeaderValue(name + upTriangle);
+                } else {
+                    table.getColumnModel().getColumn(col).setHeaderValue(name + downTriangle);
+                }
+
+                ArrayList<Route> routes;
                 switch (name) {
                     case "id":
-                        if (boolId)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getId)).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getId).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolId = !boolId;
                         break;
                     case "name":
-                        if (boolName)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getName)).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getName).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolName = !boolName;
                         break;
                     case "coordinates_x":
-                        if (boolX)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getCoordinates().getX())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getCoordinates().getX()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolX = !boolX;
                         break;
                     case "coordinates_y":
-                        if (boolY)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getCoordinates().getY())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getCoordinates().getY()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolY = !boolY;
                         break;
                     case "creationDate":
-                        if (boolDate)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getCreationDate)).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getCreationDate).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolDate = !boolDate;
                         break;
 
                     case "locationFrom_x":
-                        if (fromX)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getX())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getX()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        fromX = !fromX;
                         break;
                     case "locationFrom_y":
-                        if (fromY)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getY())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getY()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        fromY = !fromY;
                         break;
                     case "locationFrom_z":
-                        if (fromZ)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getZ())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getZ()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        fromZ = !fromZ;
                         break;
                     case "locationFrom_name":
-                        if (fromName)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getName())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getFrom().getName()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        fromName = !fromName;
                         break;
                     case "locationTo_x":
-                        if (toX)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getX())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getX()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        toX = !toX;
                         break;
                     case "locationTo_y":
-                        if (toY)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getY())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getY()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        toY = !toY;
                         break;
                     case "locationTo_name":
-                        if (toName)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getName())).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing((Route o) -> o.getTo().getName()).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        toName = !toName;
                         break;
                     case "distance":
-                        if (boolDistance)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getDistance)).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getDistance).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolDistance = !boolDistance;
                         break;
                     case "creator":
-                        if (boolCreator)
+                        if (SortedBy.direction == SortDirection.UP)
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getCreator)).collect(Collectors.toCollection(ArrayList::new));
                         else
                             routes = tableModel.getRoutes().stream().sorted(Comparator.comparing(Route::getCreator).reversed()).collect(Collectors.toCollection(ArrayList::new));
-                        boolCreator = !boolCreator;
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value for columns: " + name);
                 }
                 refresh(routes);
             }
@@ -744,7 +758,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         }
     }
 
-    public void getCountGreaterThanDistance(Float distance){
+    public void getCountGreaterThanDistance(Float distance) {
         log("");
         Command cmd = new CountGreaterThanDistance();
         cmd.setArgument(String.valueOf(distance));
@@ -782,6 +796,7 @@ public class MainWindow extends JFrame implements LanguageSwitchble {
         info.setText(rb.getString("info"));
         removeById.setText(rb.getString("remove_by_id"));
         removeByDistance.setText(rb.getString("remove_greater"));
+        countGreaterThanDistanceButton.setText(rb.getString("countGreaterThanDistanceButton"));
         updateId.setText(rb.getString("update_id"));
         show.setText(rb.getString("show"));
         logoutItem.setText(rb.getString("menuLogOut"));

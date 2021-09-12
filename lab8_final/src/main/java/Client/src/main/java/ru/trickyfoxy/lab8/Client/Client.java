@@ -1,4 +1,4 @@
-package ru.trickyfoxy.lab8;
+package ru.trickyfoxy.lab8.Client;
 
 import ru.trickyfoxy.lab8.collection.Route;
 import ru.trickyfoxy.lab8.commands.CommandsManager;
@@ -38,7 +38,7 @@ public class Client {
         Client.PORT = PORT;
     }
 
-    private static int TIMEOUT = 500000;
+    private static int TIMEOUT = 100000;
     public Connector connector = null;
     Scanner consoleInput = new Scanner(System.in);
     Thread notifier = null;
@@ -119,104 +119,6 @@ public class Client {
         connector.connect();
 
         CommandsManager.getInstance();
-        return;
-        /*
-        ReadWriteInterface readWriteInterface = new ReadWriteInterface(
-                new InputStreamReader(System.in, StandardCharsets.UTF_8),
-                new OutputStreamWriter(System.out, StandardCharsets.UTF_8),
-                true,
-                "");
-        Thread notifier = null;
-        String host = "localhost";
-        LoginAndPass loginAndPass;
-        String username;
-        String password;
-        username = "kek";
-        password = "lol";
-        while (true) {
-            try {
-                if (username == null && password == null) {
-                    loginAndPass = askLoginAndPass();
-                    username = loginAndPass.login;
-                    password = loginAndPass.pass;
-                }
-                System.out.print("Подключение ...");
-                connector = new Connector(new InetSocketAddress(host, PORT), TIMEOUT);
-                connector.connect();
-                System.out.println("Соединение установлено.");
-
-                while (!auth(connector, username, password)) {
-                    connector.disconnect();
-                    System.err.println("Неправильный логин/пароль. Ввести заново или зарегистрировать этого пользователя? reg/login");
-                    String answer;
-                    while (true) {
-                        answer = consoleInput.nextLine();
-                        if (answer.equals("login")) {
-                            loginAndPass = askLoginAndPass();
-                            username = loginAndPass.login;
-                            password = loginAndPass.pass;
-                            break;
-                        } else if (answer.equals("reg")) {
-                            String answerRegOrLogin;
-                            while (true) {
-                                if (!register(connector, username, password)) {
-                                    connector.disconnect();
-                                    System.err.println("Имя пользователя занято. Зарегистрировать другого или войти под другим? reg/login");
-                                    while (!(answerRegOrLogin = consoleInput.nextLine()).equals("login")) {
-                                        if ("reg".equals(answerRegOrLogin)) {
-                                            loginAndPass = askLoginAndPass();
-                                            username = loginAndPass.login;
-                                            password = loginAndPass.pass;
-                                            break;
-                                        } else {
-                                            System.out.println("reg/login?");
-                                        }
-                                    }
-                                    if (answerRegOrLogin.equals("login")) {
-                                        break;
-                                    }
-                                } else {
-                                    break;
-                                }
-
-                            }
-                        } else {
-                            System.out.println("reg/login?");
-                        }
-                        if (answer.equals("reg")) {
-                            break;
-                        }
-                    }
-                }
-                notifier = new Notifier(new Connector(new InetSocketAddress(host, PORT), TIMEOUT, connector.getSession()));
-                notifier.start();
-                try {
-                    CommandsManager.getInstance().loop(readWriteInterface, connector);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (ExitFromScriptException e) {
-                    break;
-                }
-                break;
-            } catch (IOException | TimeoutConnectionException e) {
-                if (notifier != null) {
-                    notifier.interrupt();
-                }
-                System.err.println("Не могу подключиться к " + host + ":" + PORT + ". Подключиться ещё раз? yes/no");
-                String answer;
-                while (!(answer = consoleInput.nextLine()).equals("yes")) {
-                    switch (answer) {
-                        case "":
-                            break;
-                        case "no":
-                            return;
-                        default:
-                            System.out.println("yes/no?");
-                    }
-                }
-            }
-        }
-         */
     }
 
     /**

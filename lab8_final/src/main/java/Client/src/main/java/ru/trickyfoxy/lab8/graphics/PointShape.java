@@ -26,8 +26,6 @@ public class PointShape implements Shapes {
 
     @Override
     public Shapes process() {
-        double x1 = x - pointWidth / 2;
-        double y1 = y - pointWidth / 2;
         double ovalW = pointWidth;
         double ovalH = pointWidth;
         Ellipse2D point = new Ellipse2D.Double(x, y, ovalW * 2, ovalH * 2);
